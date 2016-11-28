@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <AnchorPane prefHeight="480.0" prefWidth="600.0">
+         <children>
+            <MenuBar prefHeight="25.0" prefWidth="600.0">
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Close" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Delete" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="About" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+            <TextField fx:id="messageInputField" layoutX="155.0" layoutY="445.0" prefHeight="25.0" prefWidth="380.0" />
+            <Button fx:id="sendButton" layoutX="540.0" layoutY="445.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="55.0" text="Send" />
+            <VBox fx:id="userListBox" layoutY="25.0" prefHeight="455.0" prefWidth="150.0" />
+            <Separator layoutX="147.0" layoutY="25.0" orientation="VERTICAL" prefHeight="455.0" prefWidth="2.0" />
+            <TextArea fx:id="messageDisplayArea" blendMode="MULTIPLY" depthTest="DISABLE" editable="false" layoutX="155.0" layoutY="30.0" maxHeight="408.0" minHeight="30.0" prefHeight="408.0" prefWidth="440.0" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
