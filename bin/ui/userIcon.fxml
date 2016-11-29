@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.Blend?>
+<?import javafx.scene.effect.Glow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml">
+   <children>
+      <AnchorPane mouseTransparent="true" prefHeight="150.0" prefWidth="150.0">
+         <children>
+            <Label fx:id="addressField" layoutX="15.0" layoutY="55.0" prefHeight="20.0" prefWidth="128.0" text="IP Address">
+               <effect>
+                  <Glow>
+                     <input>
+                        <Blend />
+                     </input>
+                  </Glow>
+               </effect>
+            </Label>
+            <Label fx:id="recevingPortField" layoutX="15.0" layoutY="75.0" prefHeight="20.0" prefWidth="128.0" text="Receving Port">
+               <effect>
+                  <Glow>
+                     <input>
+                        <Blend />
+                     </input>
+                  </Glow>
+               </effect>
+            </Label>
+            <CheckBox fx:id="isAvaliableField" allowIndeterminate="true" layoutX="14.0" layoutY="111.0" mnemonicParsing="false" text="Avaliable" />
+            <Label fx:id="nameField" layoutX="14.0" layoutY="26.0" prefHeight="20.0" prefWidth="60.0" text="Name">
+               <effect>
+                  <Glow>
+                     <input>
+                        <Blend />
+                     </input>
+                  </Glow>
+               </effect>
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+   </children>
+</fx:root>

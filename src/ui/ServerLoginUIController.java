@@ -23,8 +23,6 @@ public class ServerLoginUIController extends AnchorPane {
 	@FXML ImageView logoContainer;
 	
 	public ServerLoginUIController(){
-		Image logo = new Image("logo.png");
-		logoContainer.setImage(logo);
 	}
 	
 	@FXML public void onClickStartButton() throws IOException{
@@ -38,11 +36,14 @@ public class ServerLoginUIController extends AnchorPane {
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ServerMainUI.fxml"));
 			ServerMainUIController con = new ServerMainUIController(recPort, sendPort);
 			fxmlLoader.setController(con);
+			Stage preStage = (Stage) startButton.getScene().getWindow();
+			preStage.close();
+			System.out.println("Start Button Clicked");
 			AnchorPane rootLayout = (AnchorPane) fxmlLoader.load();
 			Stage newSta = new Stage();
 			newSta.setTitle("Chatty Server");
 			newSta.setScene(new Scene(rootLayout));
-			
+			newSta.show();
 		}catch(NumberFormatException e){
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Input Error");
