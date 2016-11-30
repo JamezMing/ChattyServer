@@ -22,8 +22,6 @@ public class ServerManager {
 	private global.GlobalVariables GV;
 	private InetAddress nextServerAddr;
 	private int nextServerPort;
-	private ServerMessageDataBaseManager messageDataBase;
-	private ServerUserDataBaseManager userDataBase;
 	private boolean hasNextServer = false;
 	private ServerMainUIController myController;
 	private DatagramSocket serverListenSoc;
@@ -39,6 +37,9 @@ public class ServerManager {
 			nextServerPort = port;
 			hasNextServer = true;
 			myController = controller;
+			ServerMessageDataBaseManager.init();
+			ServerUserDataBaseManager.init();
+			
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -52,12 +53,20 @@ public class ServerManager {
 			nextServerAddr = InetAddress.getLocalHost();
 			nextServerPort = recevingPort;;
 			myController = controller;
+			ServerMessageDataBaseManager.init();
+			ServerUserDataBaseManager.init();
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
+	public void recover() throws UnknownHostException{
+		userList = ServerUserDataBaseManager.recoverUserData();
+		for(User u:userList){
+			u.recoverHistoryRequest(ServerMessageDataBaseManager.retrieveDataByUser(u.getAddr(), u.getRecevingPort()));
+		}
+	}
 	
 	public int getUserIndexByKey(byte[] key){
 		for (User u:userList){

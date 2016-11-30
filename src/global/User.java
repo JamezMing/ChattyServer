@@ -20,7 +20,8 @@ public class User {
 	private HashMap<Integer, Request> history = new HashMap<Integer, Request>();
 	private boolean isRegistered = false;
 	private boolean isAvaliable = true;
-	private ArrayList<User> allowedListofUser = new ArrayList<User>();
+	private boolean toBeRecovered = false;
+	private ArrayList<String> allowedListofUser = new ArrayList<String>();
 	private byte[] userFingerPrint; 
 	private byte[] userPubKey;
 	private byte[] userPriKey;
@@ -66,7 +67,7 @@ public class User {
 		}
 	}
 	
-	public User(String username, InetAddress address, int recPortNumber, String avaliability, String allowedUsers, byte[] secretKey){
+	public User(String username, InetAddress address, int recPortNumber, String avaliability, byte[] secretKey, ArrayList<String> friendsList){
 		usercount++;
 		name = username;
 		addr = address;
@@ -81,10 +82,18 @@ public class User {
 			isAvaliable = (Boolean) null;
 			isRegistered = false;
 		}
-		String userListStr = allowedUsers.trim().substring(1, allowedUsers.length()-1);
-		ArrayList<String> userList = new ArrayList<String>(Arrays.asList(userListStr.split(",")));
-		
+		userFingerPrint = secretKey;
+		allowedListofUser = friendsList;
+		toBeRecovered = true;
 	}
+	
+	public void recoverHistoryRequest(HashMap<Integer, Request> his){
+		if(this.toBeRecovered == false){
+			history = his;
+		}
+	}
+	
+	
 	
 	public boolean logHistoryRequest(Request req, Integer index){
 		if(history.containsKey(index)){
@@ -122,7 +131,7 @@ public class User {
 		return userFingerPrint;
 	}
 	
-	public void setListOfAllowedUsers(ArrayList<User> list){
+	public void setListOfAllowedUsers(ArrayList<String> list){
 		this.allowedListofUser = list;
 	}
 	
@@ -163,17 +172,17 @@ public class User {
 		}
 	}
 	
-	public void makeFriend(User user){
-		allowedListofUser.add(user);
+	public void makeFriend(String userSig){
+		allowedListofUser.add(userSig);
 	}
 	
 	public void setReceivePort(int port){
 		recevingPort = port;
 	}
 	
-	public boolean isFriend(InetAddress addr, String name){
-		for (User u: allowedListofUser){
-			if(u.getAddr().equals(addr) && u.getName().equals(name)){
+	public boolean isFriend(String userSignature){
+		for (String u: allowedListofUser){
+			if(u.equals(userSignature)){
 				return true;
 			}
 		}
@@ -181,22 +190,15 @@ public class User {
 	}
 	
 	public boolean isFriend(User tar){
-		for (User u: allowedListofUser){
-			if(u.getAddr().equals(tar.getAddr()) && u.getName().equals(tar.getName())){
+		for (String u: allowedListofUser){
+			if(u.equals(new String(tar.getSecret()))){
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	public boolean isFriendByKey(User tar){
-		for (User u: allowedListofUser){
-			if(Arrays.equals(u.getSecret(), tar.getSecret())){
-				return true;
-			}
-		}
-		return false;
-	}
+
 	
 
 	

@@ -2,7 +2,9 @@ package global;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -12,6 +14,8 @@ import org.tmatesoft.sqljet.core.table.ISqlJetCursor;
 import org.tmatesoft.sqljet.core.table.ISqlJetTable;
 import org.tmatesoft.sqljet.core.table.SqlJetDb;
 
+import requestsParser.Request;
+
 public class ServerMessageDataBaseManager {
 	private static SqlJetDb db;
 	private static final String DB_NAME = "ServerMessageData.db";
@@ -20,6 +24,8 @@ public class ServerMessageDataBaseManager {
 	private static final String USER_NAME_FIELD = "user_name";
 	private static final String USER_RECEIVEPORT_FIELD = "user_receive_port";
 	private static final String MESSAGE_FIELD = "user_message";
+	private static final String MESSAGE_SENDER_ADDRESS = "sender_address";
+	private static final String MESSAGE_SENDER_PORT = "sender_port";
 	private static final String MESSAGE_INDEX_FIELD = "message_index";
 	private static final String MESSAGEQUERY_INDEX = "query_index";
 	private static final String NAMEMESSAGEQUERY_INDEX = "namequery_index";
@@ -48,7 +54,7 @@ public class ServerMessageDataBaseManager {
 				db.getOptions().setUserVersion(1);
 	            String createTableQuery = "CREATE TABLE " + TABLE_NAME + 
 	            		" (" + USER_ADDRESS_FIELD + " TEXT NOT NULL, "+ USER_NAME_FIELD + " TEXT NOT NULL , " +  USER_RECEIVEPORT_FIELD + " TEXT NOT NULL , " + MESSAGE_FIELD + "TEXT NOT NULL, " + 
-	            		MESSAGE_INDEX_FIELD + " PRIMARY KEY TEXT NOT NULL" +  ")";
+	            		MESSAGE_SENDER_ADDRESS + " TEXT NOT NULL, "+ MESSAGE_SENDER_PORT + " TEXT NOT NULL, " + MESSAGE_INDEX_FIELD + " PRIMARY KEY TEXT NOT NULL" +  ")";
 	            
 	            String createNameQuery = "CREATE UNIQUE INDEX " + MESSAGEQUERY_INDEX + " ON " + TABLE_NAME + "(" +  USER_ADDRESS_FIELD + ", " + USER_RECEIVEPORT_FIELD  + ", " + MESSAGE_INDEX_FIELD + ")"; 
 	            String createMessageQuery = "CREATE UNIQUE INDEX " + NAMEMESSAGEQUERY_INDEX + " ON " + TABLE_NAME + "(" +  USER_ADDRESS_FIELD + ", " + USER_NAME_FIELD  + ", " + MESSAGE_INDEX_FIELD + ")";
@@ -69,13 +75,6 @@ public class ServerMessageDataBaseManager {
 		
 		}
 		
-		public static void insertItem(InetAddress addr, String userName, Integer recPort, boolean isAvaliable, byte[] userKey, ArrayList<String> allowedListUser) throws SqlJetException{
-			String address = addr.getHostAddress();
-			String port = recPort.toString();
-			db.beginTransaction(SqlJetTransactionMode.WRITE);
-			ISqlJetTable table = db.getTable(TABLE_NAME);
-			table.insert(address, userName, port, String.valueOf(isAvaliable), DatatypeConverter.printHexBinary(userKey), allowedListUser.toString());
-		}
 		
 		
 		public static String[] searchItem(InetAddress addr, Integer recPort, Integer messageIndex){
@@ -84,7 +83,7 @@ public class ServerMessageDataBaseManager {
 				ISqlJetCursor cursor = db.getTable(TABLE_NAME).lookup(MESSAGEQUERY_INDEX, addr.getHostAddress(), recPort.toString(), messageIndex.toString());
 				System.out.println(new String("The record is found: \n Name: " + cursor.getString(USER_NAME_FIELD) + " \n" + "Address: " + cursor.getString(USER_ADDRESS_FIELD) + "\n" + 
 						"User Receving Port: " + cursor.getString(USER_RECEIVEPORT_FIELD)));
-				String[] res = {cursor.getString(USER_ADDRESS_FIELD), cursor.getString(USER_NAME_FIELD), cursor.getString(USER_RECEIVEPORT_FIELD), cursor.getString(MESSAGE_FIELD), cursor.getString(MESSAGE_INDEX_FIELD)};
+				String[] res = {cursor.getString(USER_ADDRESS_FIELD), cursor.getString(USER_NAME_FIELD), cursor.getString(USER_RECEIVEPORT_FIELD), cursor.getString(MESSAGE_FIELD), cursor.getString(MESSAGE_SENDER_ADDRESS), cursor.getString(MESSAGE_SENDER_PORT), cursor.getString(MESSAGE_INDEX_FIELD)};
 				db.commit();
 				return res;
 			}catch(SqlJetException e){
@@ -98,7 +97,7 @@ public class ServerMessageDataBaseManager {
 				ISqlJetCursor cursor = db.getTable(TABLE_NAME).lookup(MESSAGEQUERY_INDEX, addr.getHostAddress(), name, messageIndex.toString());
 				System.out.println(new String("The record is found: \n Name: " + cursor.getString(USER_NAME_FIELD) + " \n" + "Address: " + cursor.getString(USER_ADDRESS_FIELD) + "\n" + 
 						"User Receving Port: " + cursor.getString(USER_RECEIVEPORT_FIELD)));
-				String[] res = {cursor.getString(USER_ADDRESS_FIELD), cursor.getString(USER_NAME_FIELD), cursor.getString(USER_RECEIVEPORT_FIELD), cursor.getString(MESSAGE_FIELD), cursor.getString(MESSAGE_INDEX_FIELD)};
+				String[] res = {cursor.getString(USER_ADDRESS_FIELD), cursor.getString(USER_NAME_FIELD), cursor.getString(USER_RECEIVEPORT_FIELD), cursor.getString(MESSAGE_FIELD), cursor.getString(MESSAGE_SENDER_ADDRESS), cursor.getString(MESSAGE_SENDER_PORT), cursor.getString(MESSAGE_INDEX_FIELD)};
 				db.commit();
 				return res;
 			}catch(SqlJetException e){
@@ -107,10 +106,10 @@ public class ServerMessageDataBaseManager {
 			}
 		}
 		
-		public static void insertItem(InetAddress addr, String name, Integer recPort, String message, Integer messageIndex) throws SqlJetException{
+		public static void insertItem(InetAddress addr, String name, Integer recPort, String message, InetAddress senderAddr, Integer sendPort, Integer messageIndex) throws SqlJetException{
 			db.beginTransaction(SqlJetTransactionMode.WRITE);
 			ISqlJetTable table = db.getTable(TABLE_NAME);
-			table.insert(addr.getHostAddress(), name, recPort.toString(), message, messageIndex.toString());
+			table.insert(addr.getHostAddress(), name, recPort.toString(), message, senderAddr.getHostAddress(), sendPort.toString(), messageIndex.toString());
 			db.commit(); 
 		}
 		
@@ -138,6 +137,23 @@ public class ServerMessageDataBaseManager {
 			}catch(SqlJetException e){
 				System.out.println("An error in database has ocurred when delete user record.");
 			}
+		}
+		
+		public static HashMap<Integer, Request> retrieveDataByUser(InetAddress addr, Integer port) throws NumberFormatException, UnknownHostException{
+			HashMap<Integer, Request> history = new HashMap<Integer, Request>();
+			try{
+				db.beginTransaction(SqlJetTransactionMode.READ_ONLY);;
+				ISqlJetCursor cursor = db.getTable(TABLE_NAME).lookup(PORTUSER_INDEX, addr.getHostAddress(), port.toString());
+				while(!cursor.eof()){
+					Request req = new Request(cursor.getString(MESSAGE_INDEX_FIELD),InetAddress.getByName(cursor.getString(MESSAGE_SENDER_ADDRESS)), new Integer(cursor.getString(MESSAGE_SENDER_PORT)).intValue());
+					history.put(new Integer(cursor.getString(MESSAGE_INDEX_FIELD)), req);
+				}
+				cursor.close();
+			}catch(SqlJetException e){
+				System.out.println("An error in database has ocurred when recovering user record.");
+			}
+			return history;
+			
 		}
 		
 		public static void clearDataBase(){
