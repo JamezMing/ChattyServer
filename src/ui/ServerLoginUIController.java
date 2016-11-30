@@ -19,6 +19,8 @@ import javafx.stage.Stage;
 public class ServerLoginUIController extends AnchorPane {
 	@FXML TextArea recPortField;
 	@FXML TextArea sendPortField;
+	@FXML TextArea nextServerAddressField;
+	@FXML TextArea nextServerPortField;
 	@FXML Button startButton;
 	@FXML ImageView logoContainer;
 	
@@ -29,12 +31,21 @@ public class ServerLoginUIController extends AnchorPane {
 		try{
 			Integer recPort = new Integer(recPortField.getText());
 			Integer sendPort = new Integer(sendPortField.getText());
+			InetAddress nextServerAddress = InetAddress.getLocalHost();
+			Integer nextServerRecPort = recPort;
+			if(nextServerAddressField.getText()!=null && nextServerPortField.getText()!=null){
+				nextServerAddress = InetAddress.getByName(nextServerAddressField.getText());
+				nextServerRecPort = new Integer(nextServerPortField.getText());
+			}else{
+				System.out.println("The next server fields are empty");
+
+			}
 			if(recPort >= 65536 || recPort < 0 ||sendPort >= 65536 || sendPort < 0 ){
 				throw new NumberFormatException();
 			}
 			String myAddr = InetAddress.getLocalHost().getHostAddress();
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ServerMainUI.fxml"));
-			ServerMainUIController con = new ServerMainUIController(recPort, sendPort);
+			ServerMainUIController con = new ServerMainUIController(recPort, sendPort, nextServerAddress, nextServerRecPort);
 			fxmlLoader.setController(con);
 			Stage preStage = (Stage) startButton.getScene().getWindow();
 			preStage.close();
@@ -49,6 +60,12 @@ public class ServerLoginUIController extends AnchorPane {
 			alert.setTitle("Input Error");
 			alert.setHeaderText(null);
 			alert.setContentText("Please input a valid port number!");
+			alert.showAndWait();
+		}catch(UnknownHostException f){
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Input Error");
+			alert.setHeaderText(null);
+			alert.setContentText("Please input a valid IP address!");
 			alert.showAndWait();
 		}
 		

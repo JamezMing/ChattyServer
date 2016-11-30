@@ -18,7 +18,8 @@
               <menus>
                 <Menu mnemonicParsing="false" text="File">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="Close" />
+                    <MenuItem fx:id="settingButton" mnemonicParsing="false" text="Setting" />
+                        <MenuItem mnemonicParsing="false" text="Close" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
@@ -34,7 +35,7 @@
               </menus>
             </MenuBar>
             <TextField fx:id="messageInputField" layoutX="155.0" layoutY="445.0" prefHeight="25.0" prefWidth="380.0" />
-            <Button fx:id="sendButton" layoutX="540.0" layoutY="445.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="55.0" text="Send" />
+            <Button fx:id="sendButton" layoutX="540.0" layoutY="445.0" mnemonicParsing="false" onMouseClicked="#inSendBtnClicked" prefHeight="25.0" prefWidth="55.0" text="Send" />
             <VBox fx:id="userListBox" layoutY="25.0" prefHeight="455.0" prefWidth="150.0" />
             <Separator layoutX="147.0" layoutY="25.0" orientation="VERTICAL" prefHeight="455.0" prefWidth="2.0" />
             <TextArea fx:id="messageDisplayArea" blendMode="MULTIPLY" depthTest="DISABLE" editable="false" layoutX="155.0" layoutY="30.0" maxHeight="408.0" minHeight="30.0" prefHeight="408.0" prefWidth="440.0" />

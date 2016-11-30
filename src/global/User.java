@@ -66,6 +66,26 @@ public class User {
 		}
 	}
 	
+	public User(String username, InetAddress address, int recPortNumber, String avaliability, String allowedUsers, byte[] secretKey){
+		usercount++;
+		name = username;
+		addr = address;
+		recevingPort = recPortNumber;
+		if(avaliability.equalsIgnoreCase("on")){
+			isAvaliable = true;
+		}
+		else if(avaliability.equalsIgnoreCase("off")){
+			isAvaliable = false;
+		}
+		else{
+			isAvaliable = (Boolean) null;
+			isRegistered = false;
+		}
+		String userListStr = allowedUsers.trim().substring(1, allowedUsers.length()-1);
+		ArrayList<String> userList = new ArrayList<String>(Arrays.asList(userListStr.split(",")));
+		
+	}
+	
 	public boolean logHistoryRequest(Request req, Integer index){
 		if(history.containsKey(index)){
 			return false;

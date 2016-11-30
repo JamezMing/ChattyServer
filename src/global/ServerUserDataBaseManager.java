@@ -2,12 +2,14 @@ package global;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import javax.xml.bind.DatatypeConverter;
 
 import org.tmatesoft.sqljet.core.SqlJetException;
 import org.tmatesoft.sqljet.core.SqlJetTransactionMode;
+import org.tmatesoft.sqljet.core.table.ISqlJetCursor;
 import org.tmatesoft.sqljet.core.table.ISqlJetTable;
 import org.tmatesoft.sqljet.core.table.SqlJetDb;
 
@@ -24,7 +26,7 @@ public final class ServerUserDataBaseManager {
 	private static final String ADDRESSPORT_INDEX = "addressport_index";
 	private static final String KEY_INDEX = "key_index";
 	
-	public ServerUserDataBaseManager(){}
+	private ServerUserDataBaseManager(){}
 	
 	public void init(){
 		File dbFile = new File(DB_NAME);
@@ -67,6 +69,25 @@ public final class ServerUserDataBaseManager {
 		db.beginTransaction(SqlJetTransactionMode.WRITE);
 		ISqlJetTable table = db.getTable(TABLE_NAME);
 		table.insert(address, userName, port, String.valueOf(isAvaliable), DatatypeConverter.printHexBinary(userKey), allowedListUser.toString());
+	}
+	
+	public static ArrayList<User> recoverUserData() throws UnknownHostException{
+		ArrayList<User> userList = new ArrayList<User>();
+		try {
+			ISqlJetCursor cursor = db.getTable(TABLE_NAME).order(db.getTable(TABLE_NAME).getPrimaryKeyIndexName());
+			while(!cursor.eof()){
+				InetAddress addr = InetAddress.getByName(cursor.getString(USER_ADDRESS_FIELD));
+				Integer port = new Integer(cursor.getString(USER_RECEIVEPORT_FIELD));
+				String name = cursor.getString(USER_NAME_FIELD);
+				String avaliablity = cursor.getString(USER_AVALIABLITY_FIELD);
+				String allowedUsers = cursor.getString(ALLOWED_USER_FIELD);
+				byte[] userKey = javax.xml.bind.DatatypeConverter.parseHexBinary(cursor.getString(USER_KEY_FIELD));
+			}
+		} catch (SqlJetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return userList;
 	}
 	
 	

@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArrayList;
 import global.HasRegisteredException;
+import global.ServerMessageDataBaseManager;
+import global.ServerUserDataBaseManager;
 import global.User;
 import requestsParser.Request;
 import requestsParser.RequestExecutor;
@@ -20,6 +22,9 @@ public class ServerManager {
 	private global.GlobalVariables GV;
 	private InetAddress nextServerAddr;
 	private int nextServerPort;
+	private ServerMessageDataBaseManager messageDataBase;
+	private ServerUserDataBaseManager userDataBase;
+	private boolean hasNextServer = false;
 	private ServerMainUIController myController;
 	private DatagramSocket serverListenSoc;
 	private DatagramSocket serverSendingSoc;
@@ -32,6 +37,7 @@ public class ServerManager {
 			serverSendingSoc = new DatagramSocket(sendingPort);
 			nextServerAddr = addr;
 			nextServerPort = port;
+			hasNextServer = true;
 			myController = controller;
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
@@ -52,6 +58,7 @@ public class ServerManager {
 		}
 	}
 	
+	
 	public int getUserIndexByKey(byte[] key){
 		for (User u:userList){
 			if(Arrays.equals(u.getSecret(), key)){
@@ -61,12 +68,13 @@ public class ServerManager {
 		}
 		return -1;
 	}
-	
+
 	public void init(){
 		ServerListenThread lisTh = new ServerListenThread(serverListenSoc, this);
 		lisTh.start();
 		ServerSystemListenThread sysTh = new ServerSystemListenThread(this);
 		sysTh.start();
+		System.out.println("Server Manager initialized");
 	}
 	
 	
@@ -113,6 +121,22 @@ public class ServerManager {
 		return nextServerPort;
 	}
 	
+	
+	public boolean getHasNextServer() throws UnknownHostException{
+		if(nextServerAddr.getHostAddress().equals(InetAddress.getLocalHost().getHostAddress())){
+			return false;
+		}
+		else{
+			return true;	
+		}
+	}
+	
+	public void registerNextServer(InetAddress addr, Integer recPort) throws UnknownHostException{
+		nextServerAddr = addr;
+		nextServerPort = recPort;
+	}
+	
+	
 
 	public synchronized int registerClient(User user) throws HasRegisteredException{
 		
@@ -150,7 +174,7 @@ public class ServerManager {
 			return 1;
 		}
 		User newUser = new User(name, InetAddress.getByName(address), portNum, key);
-		newUser.register();
+		newUser.register(); 
 		userList.add(newUser);
 		return 0;
 	}

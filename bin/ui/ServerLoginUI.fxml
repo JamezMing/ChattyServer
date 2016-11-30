@@ -5,15 +5,15 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.effect.Blend?>
 <?import javafx.scene.effect.Glow?>
-<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.effect.InnerShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <AnchorPane prefHeight="320.0" prefWidth="480.0">
+      <AnchorPane prefHeight="320.0" prefWidth="450.0">
          <children>
-            <Label layoutX="59.0" layoutY="84.0" prefHeight="20.0" prefWidth="150.0" text="Server Receving Port">
+            <Label layoutX="59.0" layoutY="105.0" prefHeight="20.0" prefWidth="150.0" text="Server Receving Port">
                <effect>
                   <Glow>
                      <input>
@@ -25,7 +25,7 @@
                   <Font name="System Bold" size="13.0" />
                </font>
             </Label>
-            <Label layoutX="59.0" layoutY="160.0" prefHeight="20.0" prefWidth="131.0" text="Server Sending Port">
+            <Label layoutX="59.0" layoutY="180.0" prefHeight="20.0" prefWidth="131.0" text="Server Sending Port">
                <effect>
                   <Glow>
                      <input>
@@ -37,12 +37,43 @@
                   <Font name="System Bold" size="13.0" />
                </font>
             </Label>
-            <TextArea fx:id="recPortField" blendMode="MULTIPLY" depthTest="DISABLE" layoutX="59.0" layoutY="104.0" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" prefWidth="128.0" />
-            <TextArea fx:id="sendPortField" blendMode="MULTIPLY" depthTest="DISABLE" layoutX="59.0" layoutY="180.0" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" prefWidth="128.0" />
-            <Button fx:id="startButton" layoutX="146.0" layoutY="235.0" mnemonicParsing="false" onMouseClicked="#onClickStartButton" text="Start" />
-            <ImageView fx:id="logoContainer" fitHeight="200.0" fitWidth="200.0" layoutX="240.0" layoutY="60.0" pickOnBounds="true" preserveRatio="true">
-            	
-      		</ImageView>
+            <TextArea fx:id="recPortField" blendMode="MULTIPLY" depthTest="DISABLE" layoutX="59.0" layoutY="125.0" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" prefWidth="128.0" />
+            <TextArea fx:id="sendPortField" blendMode="MULTIPLY" depthTest="DISABLE" layoutX="59.0" layoutY="200.0" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" prefWidth="128.0" />
+            <Button fx:id="startButton" layoutX="348.0" layoutY="260.0" mnemonicParsing="false" onMouseClicked="#onClickStartButton" text="Start" />
+            <Label layoutX="258.0" layoutY="105.0" prefHeight="20.0" prefWidth="150.0" text="Next Server Address">
+               <effect>
+                  <Glow>
+                     <input>
+                        <Blend />
+                     </input>
+                  </Glow>
+               </effect>
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <TextArea fx:id="nextServerAddressField" blendMode="MULTIPLY" depthTest="DISABLE" layoutX="258.0" layoutY="125.0" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" prefWidth="131.0" />
+            <TextArea fx:id="nextServerPortField" blendMode="MULTIPLY" depthTest="DISABLE" layoutX="258.0" layoutY="200.0" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" prefWidth="131.0" />
+            <Label layoutX="258.0" layoutY="180.0" prefHeight="20.0" prefWidth="163.0" text="Next Server Receive Port">
+               <effect>
+                  <Glow>
+                     <input>
+                        <Blend />
+                     </input>
+                  </Glow>
+               </effect>
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="59.0" layoutY="34.0" prefHeight="49.0" prefWidth="268.0" text="Server Session Initialization">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+               <effect>
+                  <InnerShadow blurType="GAUSSIAN" choke="0.66" color="#8b6060" height="149.98" radius="75.23249999999999" width="152.95" />
+               </effect>
+            </Label>
          </children>
       </AnchorPane>
    </children>
