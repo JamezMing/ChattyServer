@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -28,7 +29,7 @@ public final class ServerUserDataBaseManager {
 	
 	private ServerUserDataBaseManager(){}
 	
-	public void init(){
+	public static void init(){
 		File dbFile = new File(DB_NAME);
 		System.out.println(dbFile.exists());
 		if(dbFile.exists()){
@@ -81,7 +82,14 @@ public final class ServerUserDataBaseManager {
 				String name = cursor.getString(USER_NAME_FIELD);
 				String avaliablity = cursor.getString(USER_AVALIABLITY_FIELD);
 				String allowedUsers = cursor.getString(ALLOWED_USER_FIELD);
+				String[] ulist = allowedUsers.trim().substring(1, allowedUsers.length()-1).split(",");
+				for(String s: ulist){
+					s = s.trim();
+				}
+				ArrayList<String> allowUserList = new ArrayList<String>(Arrays.asList(ulist));
 				byte[] userKey = javax.xml.bind.DatatypeConverter.parseHexBinary(cursor.getString(USER_KEY_FIELD));
+				User newUser = new User(name, addr, port, avaliablity ,allowUserList, userKey);
+				userList.add(newUser);
 			}
 		} catch (SqlJetException e) {
 			// TODO Auto-generated catch block

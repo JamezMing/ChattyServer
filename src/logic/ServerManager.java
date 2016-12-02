@@ -39,6 +39,8 @@ public class ServerManager {
 			nextServerPort = port;
 			hasNextServer = true;
 			myController = controller;
+			ServerMessageDataBaseManager.init();
+			ServerUserDataBaseManager.init();
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -52,6 +54,8 @@ public class ServerManager {
 			nextServerAddr = InetAddress.getLocalHost();
 			nextServerPort = recevingPort;;
 			myController = controller;
+			ServerMessageDataBaseManager.init();
+			ServerUserDataBaseManager.init();
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -213,7 +217,14 @@ public class ServerManager {
 		return results;
 	}
 	
-
+	public User findUserByKey(String key){
+		for (User u: userList){
+			if(key.equals(u.getSecretKeyString())){
+				return u;
+			}
+		}
+		return null; 
+	}
 	
 	public User findUserByName_Single(String name){
 		for(User u:userList){
@@ -227,6 +238,17 @@ public class ServerManager {
 		boolean hasUserExist = false;
 		for (User regUser: userList){
 			if((regUser.getAddr().equals(userAdd))){
+				hasUserExist = true;
+				break;
+			}
+		}
+		return hasUserExist;
+	}
+	
+	public synchronized boolean hasUser(String key){
+		boolean hasUserExist = false;
+		for (User regUser: userList){
+			if((regUser.getSecretKeyString().equals(key))){
 				hasUserExist = true;
 				break;
 			}

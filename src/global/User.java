@@ -1,4 +1,5 @@
 package global;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -9,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import javax.crypto.ShortBufferException;
+import javax.xml.bind.DatatypeConverter;
+
 import requestsParser.Request;
 import logic.ServerSignatureGen;
 
@@ -20,7 +23,7 @@ public class User {
 	private HashMap<Integer, Request> history = new HashMap<Integer, Request>();
 	private boolean isRegistered = false;
 	private boolean isAvaliable = true;
-	private ArrayList<User> allowedListofUser = new ArrayList<User>();
+	private ArrayList<String> allowedListofUser = new ArrayList<String>();
 	private byte[] userFingerPrint; 
 	private byte[] userPubKey;
 	private byte[] userPriKey;
@@ -66,7 +69,7 @@ public class User {
 		}
 	}
 	
-	public User(String username, InetAddress address, int recPortNumber, String avaliability, String allowedUsers, byte[] secretKey){
+	public User(String username, InetAddress address, int recPortNumber, String avaliability, ArrayList<String> allowedUsers, byte[] secretKey){
 		usercount++;
 		name = username;
 		addr = address;
@@ -81,9 +84,8 @@ public class User {
 			isAvaliable = (Boolean) null;
 			isRegistered = false;
 		}
-		String userListStr = allowedUsers.trim().substring(1, allowedUsers.length()-1);
-		ArrayList<String> userList = new ArrayList<String>(Arrays.asList(userListStr.split(",")));
-		
+		allowedListofUser = allowedUsers;
+		userFingerPrint = secretKey;
 	}
 	
 	public boolean logHistoryRequest(Request req, Integer index){
@@ -110,6 +112,18 @@ public class User {
 		
 	}
 	
+	public String getPublicKeyString(){
+		return DatatypeConverter.printHexBinary(userPubKey);
+	}
+	
+	public String getPrivateKeyString(){
+		return DatatypeConverter.printHexBinary(userPriKey);
+	}
+	
+	public String getSecretKeyString(){
+		return DatatypeConverter.printHexBinary(userPriKey);
+	}
+	
 	public byte[] getPublicKey(){
 		return userPubKey;
 	}
@@ -122,7 +136,7 @@ public class User {
 		return userFingerPrint;
 	}
 	
-	public void setListOfAllowedUsers(ArrayList<User> list){
+	public void setListOfAllowedUsers(ArrayList<String> list){
 		this.allowedListofUser = list;
 	}
 	
@@ -163,17 +177,21 @@ public class User {
 		}
 	}
 	
+	public void makeFriend(String userSecKey){
+		allowedListofUser.add(userSecKey);
+	}
+	
 	public void makeFriend(User user){
-		allowedListofUser.add(user);
+		allowedListofUser.add(DatatypeConverter.printHexBinary(user.getSecret()));
 	}
 	
 	public void setReceivePort(int port){
 		recevingPort = port;
 	}
 	
-	public boolean isFriend(InetAddress addr, String name){
-		for (User u: allowedListofUser){
-			if(u.getAddr().equals(addr) && u.getName().equals(name)){
+	public boolean isFriend(String secretKey){
+		for (String u: allowedListofUser){
+			if(u.equalsIgnoreCase(secretKey)){
 				return true;
 			}
 		}
@@ -181,22 +199,14 @@ public class User {
 	}
 	
 	public boolean isFriend(User tar){
-		for (User u: allowedListofUser){
-			if(u.getAddr().equals(tar.getAddr()) && u.getName().equals(tar.getName())){
+		for (String u: allowedListofUser){
+			if(new BigInteger(u,16).toByteArray().equals(tar.getSecret())){
 				return true;
 			}
 		}
 		return false;
 	}
-	
-	public boolean isFriendByKey(User tar){
-		for (User u: allowedListofUser){
-			if(Arrays.equals(u.getSecret(), tar.getSecret())){
-				return true;
-			}
-		}
-		return false;
-	}
+
 	
 
 	
