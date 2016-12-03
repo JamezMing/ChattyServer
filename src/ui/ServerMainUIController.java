@@ -4,6 +4,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import global.HasRegisteredException;
+import global.User;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -26,14 +28,14 @@ public class ServerMainUIController extends AnchorPane{
 		myManager.init();
 	}
 	
-	@FXML public void refreshListBox(){
-		userListBox.getChildren().clear();
-		userListBox.getChildren().addAll(userList);
-	}
-	
-	public void addUserToList(UserIconController user){
-		userList.add(user);
-		refreshListBox();
+	public void addUsericonToList(User user){
+		UserIconController icon = new UserIconController(myManager);
+		if(userList.size() >= 5){
+			return;
+		}
+		userList.add(icon);
+		icon.initIcon(user.getName(), user.getAddr(), user.getRecevingPort());
+		userListBox.getChildren().add(icon);
 	}
 	
 	public void displayMessage(String msg){
@@ -49,7 +51,7 @@ public class ServerMainUIController extends AnchorPane{
 		}
 	}
 	
-	@FXML public void inSendBtnClicked(){
+	@FXML public void inSendBtnClicked() throws UnknownHostException, HasRegisteredException{
 		String command = messageInputField.getText();
 		messageInputField.clear();
 		displayMessage(command);

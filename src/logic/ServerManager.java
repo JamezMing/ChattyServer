@@ -8,19 +8,25 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.xml.bind.DatatypeConverter;
+
 import global.HasRegisteredException;
 import global.ServerMessageDataBaseManager;
 import global.ServerUserDataBaseManager;
 import global.User;
+import javafx.fxml.FXMLLoader;
 import requestsParser.Request;
 import requestsParser.RequestExecutor;
 import ui.ServerMainUIController;
+import ui.UserIconController;
 import logic.ServerListenThread;
 
 public class ServerManager {
 	private volatile CopyOnWriteArrayList<User> userList = new CopyOnWriteArrayList<User>();
 	private global.GlobalVariables GV;
 	private InetAddress nextServerAddr;
+	private ServerSignatureGen sigGen;
 	private int nextServerPort;
 	private boolean hasNextServer = false;
 	private ServerMainUIController myController;
@@ -61,10 +67,11 @@ public class ServerManager {
 		}
 	}
 	
-	public void recover() throws UnknownHostException{
+	public void recoverFromDatabase() throws UnknownHostException{
 		userList = ServerUserDataBaseManager.recoverUserData();
 		for(User u:userList){
 			u.recoverHistoryRequest(ServerMessageDataBaseManager.retrieveDataByUser(u.getAddr(), u.getRecevingPort()));
+			myController.addUsericonToList(u);
 		}
 	}
 	
@@ -85,7 +92,7 @@ public class ServerManager {
 		sysTh.start();
 		System.out.println("Server Manager initialized");
 	}
-	
+		
 	
 	public void processRequest(Request req){
 		new RequestExecutor(req, this).start();
@@ -114,7 +121,7 @@ public class ServerManager {
 	
 	public synchronized void authenticateUser(User self, User[] users){
 		for (User u:users){
-			u.makeFriend(self);
+			u.makeFriend(DatatypeConverter.printHexBinary(self.getSecret()));
 		}
 	}
 	
@@ -148,12 +155,12 @@ public class ServerManager {
 	
 
 	public synchronized int registerClient(User user) throws HasRegisteredException{
-		
 		if(userList.size() >= 5){
 			return 1;
 		}
 		user.register();
 		userList.add(user);
+		myController.addUsericonToList(user);
 		return 0;
 	}
 	
@@ -183,7 +190,7 @@ public class ServerManager {
 			return 1;
 		}
 		User newUser = new User(name, InetAddress.getByName(address), portNum, key);
-		newUser.register(); 
+		newUser.register();
 		userList.add(newUser);
 		return 0;
 	}

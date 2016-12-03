@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import javax.crypto.ShortBufferException;
+import javax.xml.bind.DatatypeConverter;
+
 import requestsParser.Request;
 import logic.ServerSignatureGen;
 
@@ -88,9 +90,10 @@ public class User {
 	}
 	
 	public void recoverHistoryRequest(HashMap<Integer, Request> his){
-		if(this.toBeRecovered == false){
+		if(this.toBeRecovered == true){
 			history = his;
 		}
+		toBeRecovered = false;
 	}
 	
 	
@@ -176,6 +179,10 @@ public class User {
 		allowedListofUser.add(userSig);
 	}
 	
+	public void makeFriend(User user){
+		allowedListofUser.add(DatatypeConverter.printHexBinary(user.getSecret()));
+	}
+	
 	public void setReceivePort(int port){
 		recevingPort = port;
 	}
@@ -191,7 +198,7 @@ public class User {
 	
 	public boolean isFriend(User tar){
 		for (String u: allowedListofUser){
-			if(u.equals(new String(tar.getSecret()))){
+			if(u.equals(DatatypeConverter.printHexBinary(tar.getSecret()))){
 				return true;
 			}
 		}

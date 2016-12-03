@@ -33,9 +33,9 @@ public class ServerLoginUIController extends AnchorPane {
 			Integer sendPort = new Integer(sendPortField.getText());
 			InetAddress nextServerAddress = InetAddress.getLocalHost();
 			Integer nextServerRecPort = recPort;
-			if(nextServerAddressField.getText()!=null && nextServerPortField.getText()!=null){
+			if(nextServerAddressField.getText()==null && nextServerPortField.getText()==null){
 				nextServerAddress = InetAddress.getByName(nextServerAddressField.getText());
-				nextServerRecPort = new Integer(nextServerPortField.getText());
+				nextServerRecPort = recPort;
 			}else{
 				System.out.println("The next server fields are empty");
 

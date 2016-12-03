@@ -11,6 +11,7 @@ import javax.crypto.KeyAgreement;
 import javax.crypto.ShortBufferException;
 import javax.crypto.interfaces.DHPublicKey;
 import javax.crypto.spec.*;
+import javax.xml.bind.DatatypeConverter;
 
 
 public class ServerSignatureGen{
@@ -43,6 +44,11 @@ public class ServerSignatureGen{
 	public int getLen(){
 		return mySecret.length;
 	}
+	
+	public String getSecretString(){
+		return DatatypeConverter.printHexBinary(mySecret);
+	}
+	
 	public byte[] getSecret(){
 		return mySecret; 
 	}

@@ -91,10 +91,10 @@ public class RequestExecutor extends Thread{
 			}
 
 			int status = -1;
-			if(args[4].equalsIgnoreCase("on")){
+			if(args[4].equalsIgnoreCase("on")||args[4].equalsIgnoreCase("true")){
 				status = 1;
 			}
-			else if(args[4].equalsIgnoreCase("off")){
+			else if(args[4].equalsIgnoreCase("off")||args[4].equalsIgnoreCase("false")){
 				status = 0;
 			}
 			else{
