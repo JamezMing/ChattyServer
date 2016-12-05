@@ -3,7 +3,8 @@ package ui;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
+import global.ServerMessageDataBaseManager;
+import global.ServerUserDataBaseManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -33,16 +34,20 @@ public class ServerLoginUIController extends AnchorPane {
 			Integer sendPort = new Integer(sendPortField.getText());
 			InetAddress nextServerAddress = InetAddress.getLocalHost();
 			Integer nextServerRecPort = recPort;
-			if(nextServerAddressField.getText()==null && nextServerPortField.getText()==null){
+			if(!(nextServerAddressField.getText().equals(new String())) && !(nextServerPortField.getText().equals(new String()))){
+				nextServerRecPort =  new Integer(nextServerPortField.getText());
 				nextServerAddress = InetAddress.getByName(nextServerAddressField.getText());
-				nextServerRecPort = recPort;
 			}else{
 				System.out.println("The next server fields are empty");
+				System.out.println("Default Address is " + nextServerAddress.getHostAddress());
+				System.out.println("Default port is " + nextServerRecPort);
 
 			}
 			if(recPort >= 65536 || recPort < 0 ||sendPort >= 65536 || sendPort < 0 ){
+				System.out.println(recPort+ " " + sendPort);
 				throw new NumberFormatException();
 			}
+
 			String myAddr = InetAddress.getLocalHost().getHostAddress();
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ServerMainUI.fxml"));
 			ServerMainUIController con = new ServerMainUIController(recPort, sendPort, nextServerAddress, nextServerRecPort);
@@ -61,12 +66,15 @@ public class ServerLoginUIController extends AnchorPane {
 			alert.setHeaderText(null);
 			alert.setContentText("Please input a valid port number!");
 			alert.showAndWait();
+			System.out.println(e);
 		}catch(UnknownHostException f){
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Input Error");
 			alert.setHeaderText(null);
 			alert.setContentText("Please input a valid IP address!");
 			alert.showAndWait();
+			System.out.println(f);
+
 		}
 		
 	}

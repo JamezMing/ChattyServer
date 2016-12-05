@@ -3,6 +3,7 @@ package ui;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import global.User;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
@@ -30,6 +31,28 @@ public class UserIconController extends VBox {
             throw new RuntimeException(exception);
         }       
     }
+    
+    public boolean isUserIcon(User u){
+    	if(u.getName().equals(nameField.getText()) && u.getAddr().getHostAddress().equals(addressField.getText()) && u.getRecevingPort() == new Integer(recevingPortField.getText())){
+    		return true;
+    	}
+    	return false;
+    }
+    
+    public boolean isUserIcon(InetAddress addr, Integer port){
+    	if(addr.getHostAddress().equals(addressField.getText()) && port.equals(new Integer(recevingPortField.getText()))){
+    		return true;
+    	}
+    	return false;
+    }
+    
+    public boolean isUserIcon(InetAddress addr, String name){
+    	if(addr.getHostAddress().equals(addressField.getText()) && name.equals(nameField.getText())){
+    		return true;
+    	}
+    	return false;
+    }
+    
     
     public void initIcon(String name, InetAddress addr, Integer port){
     	addressField.setText(addr.getHostAddress());

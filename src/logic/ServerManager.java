@@ -11,6 +11,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.tmatesoft.sqljet.core.SqlJetException;
+
 import global.HasRegisteredException;
 import global.ServerMessageDataBaseManager;
 import global.ServerUserDataBaseManager;
@@ -73,6 +75,7 @@ public class ServerManager {
 			u.recoverHistoryRequest(ServerMessageDataBaseManager.retrieveDataByUser(u.getAddr(), u.getRecevingPort()));
 			myController.addUsericonToList(u);
 		}
+		
 	}
 	
 	public int getUserIndexByKey(byte[] key){
@@ -92,6 +95,7 @@ public class ServerManager {
 		sysTh.start();
 		System.out.println("Server Manager initialized");
 	}
+	
 		
 	
 	public void processRequest(Request req){
@@ -137,6 +141,10 @@ public class ServerManager {
 		return nextServerPort;
 	}
 	
+	public void changeIconState(User u, boolean isOn){
+		myController.setUserIconState(u, isOn);
+	}
+	
 	
 	public boolean getHasNextServer() throws UnknownHostException{
 		if(nextServerAddr.getHostAddress().equals(InetAddress.getLocalHost().getHostAddress())){
@@ -154,13 +162,14 @@ public class ServerManager {
 	
 	
 
-	public synchronized int registerClient(User user) throws HasRegisteredException{
+	public synchronized int registerClient(User user) throws HasRegisteredException, SqlJetException{
 		if(userList.size() >= 5){
 			return 1;
 		}
 		user.register();
 		userList.add(user);
 		myController.addUsericonToList(user);
+		ServerUserDataBaseManager.insertItem(user.getAddr(),user.getName() , user.getRecevingPort(),((Boolean)user.returnAvaliability()).toString(), user.getPublicKey(), user.getAllowedList());
 		return 0;
 	}
 	

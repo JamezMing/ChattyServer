@@ -2,14 +2,16 @@
 
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.effect.Blend?>
 <?import javafx.scene.effect.Glow?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml">
+<fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.60">
    <children>
+      <Separator layoutY="1.0" prefHeight="0.0" prefWidth="150.0" />
       <AnchorPane mouseTransparent="true" prefHeight="150.0" prefWidth="150.0">
          <children>
             <Label fx:id="addressField" layoutX="15.0" layoutY="55.0" prefHeight="20.0" prefWidth="128.0" text="IP Address">
@@ -43,6 +45,7 @@
                   <Font name="System Bold" size="14.0" />
                </font>
             </Label>
+            <Separator layoutY="150.0" prefWidth="150.0" />
          </children>
       </AnchorPane>
    </children>

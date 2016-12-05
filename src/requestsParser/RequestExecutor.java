@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import javax.xml.bind.DatatypeConverter;
 import global.GlobalVariables;
 import global.HasRegisteredException;
+import global.ServerUserDataBaseManager;
 import global.User;
+import javafx.application.Platform;
 import logic.ServerManager;
 import logic.ServerSendingThread;
 
@@ -67,7 +69,7 @@ public class RequestExecutor extends Thread{
 				new ServerSendingThread(myManager.getServerSendingPort(), newUser, responce).start();
 			}
 			else{
-				String responce = new String(GlobalVariables.REGISTER_DENIED + GlobalVariables.delimiter + index.toString());
+				String responce = new String(GlobalVariables.REGISTER_DENIED + GlobalVariables.delimiter + index.toString() + "error happened in processing");
 				new ServerSendingThread(myManager.getServerSendingPort(), newUser, responce).start();
 			}
 			break;
@@ -116,6 +118,8 @@ public class RequestExecutor extends Thread{
 				}
 				myManager.getUserList().get(key_tar).setReceivePort(new Integer(args[3]));
 				myManager.getUserList().get(key_tar).setAvaliability(isOn);
+				ServerUserDataBaseManager.modifyUserStatus(myManager.getUserList().get(key_tar), isOn);
+				myManager.changeIconState(myManager.getUserList().get(key_tar), isOn);
 				String usernames = args[5];
 				String[] userNameList = usernames.split(" ");
 				for (String n:userNameList){
@@ -170,6 +174,11 @@ public class RequestExecutor extends Thread{
 				new ServerSendingThread(myManager.getServerSendingPort(), myManager.getUserList().get(tar_key3), responce).start();
 				break;
 			}
+			else if(tarUser.returnAvaliability() == (Boolean) null){
+				String responce = new String(GlobalVariables.USER_INFO_REQUEST_DENIED + GlobalVariables.delimiter + tarName);
+				new ServerSendingThread(myManager.getServerSendingPort(), myManager.getUserList().get(tar_key3), responce).start();
+				break;
+			}
 			else if(!tarUser.isFriend(myManager.getUserList().get(tar_key3))){
 				String responce = new String(GlobalVariables.USER_INFO_REQUEST_DENIED + GlobalVariables.delimiter + tarName);
 				new ServerSendingThread(myManager.getServerSendingPort(), myManager.getUserList().get(tar_key3), responce).start();
@@ -207,12 +216,18 @@ public class RequestExecutor extends Thread{
 				e.printStackTrace();
 			}
 		}
-		try {
-			processRequest();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		Platform.runLater(new Runnable(){
+			public void run(){
+				try {
+					processRequest();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+
 		
 	}
 	

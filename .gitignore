@@ -1,4 +1,5 @@
 *.class
+.project
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
@@ -62,3 +63,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 /bin/
+
+/bin/*
+/build/

@@ -24,8 +24,17 @@ public class ServerMainUIController extends AnchorPane{
 	private ArrayList<String> messageHistory = new ArrayList<String>();
 	
 	public ServerMainUIController(Integer recPort, Integer sendPort, InetAddress nextServerAddr, Integer nextServerRecPort){
-		myManager = new ServerManager(recPort, sendPort, nextServerAddr, nextServerRecPort, this);
+		myManager = new ServerManager(sendPort,recPort, nextServerAddr, nextServerRecPort, this);
+		System.out.println("Server Manager Contructed");
 		myManager.init();
+	}
+	
+	public void setUserIconState(User u, boolean state){
+		for (UserIconController user:userList){
+			if(user.isUserIcon(u)){
+				user.setAvaliablity(state);
+			}
+		}
 	}
 	
 	public void addUsericonToList(User user){

@@ -21,7 +21,7 @@ public class User {
 	private int recevingPort;
 	private HashMap<Integer, Request> history = new HashMap<Integer, Request>();
 	private boolean isRegistered = false;
-	private boolean isAvaliable = true;
+	private boolean isAvaliable;
 	private boolean toBeRecovered = false;
 	private ArrayList<String> allowedListofUser = new ArrayList<String>();
 	private byte[] userFingerPrint; 
@@ -96,7 +96,13 @@ public class User {
 		toBeRecovered = false;
 	}
 	
+	public String returnStringListOfUser(){
+		return Arrays.toString(allowedListofUser.toArray());
+	}
 	
+	public ArrayList<String> getAllowedList(){
+		return this.allowedListofUser;
+	}
 	
 	public boolean logHistoryRequest(Request req, Integer index){
 		if(history.containsKey(index)){
@@ -166,6 +172,8 @@ public class User {
 	public boolean isRegistered(){
 		return isRegistered;
 	}
+	
+	
 	
 	public void register() throws HasRegisteredException{
 		if(isRegistered == true){

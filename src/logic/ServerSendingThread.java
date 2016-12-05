@@ -21,6 +21,8 @@ public class ServerSendingThread extends Thread{
         DatagramPacket sendPac = new DatagramPacket(message.getBytes(), message.length(), targetUser.getAddr(), targetUser.getRecevingPort());
         try {
 			dataSendPort.send(sendPac);
+			System.out.println("Message sent: " + message);
+			System.out.println("Message Destination: " + targetUser.getAddr().getHostAddress() + " Destination Port: " + targetUser.getRecevingPort());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

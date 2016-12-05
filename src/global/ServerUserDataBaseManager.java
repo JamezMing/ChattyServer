@@ -26,6 +26,8 @@ public final class ServerUserDataBaseManager {
 	private static final String ALLOWED_USER_FIELD = "allowed_user";//Allowed user is splitted by character [A, B, C ...]
 	private static final String USER_KEY_FIELD = "user_key";
 	private static final String ADDRESSPORT_INDEX = "addressport_index";
+	private static final String ADDRESSNAME_INDEX = "addressname_index";
+
 	private static final String KEY_INDEX = "key_index";
 	
 	private ServerUserDataBaseManager(){}
@@ -50,12 +52,15 @@ public final class ServerUserDataBaseManager {
 				db.beginTransaction(SqlJetTransactionMode.WRITE);
 				db.getOptions().setUserVersion(1);
 	            String createTableQuery = "CREATE TABLE " + TABLE_NAME + 
-	            		" (" + USER_ADDRESS_FIELD + " TEXT NOT NULL, "+ USER_NAME_FIELD + " PRIMARY KEY TEXT NOT NULL , " +  USER_RECEIVEPORT_FIELD + " TEXT NOT NULL , " + USER_AVALIABLITY_FIELD + "TEXT NOT NULL, " + 
-	            		USER_KEY_FIELD + " PRIMARY KEY TEXT NOT NULL, " + ALLOWED_USER_FIELD + " TEXT NOT NULL, "  + ")";
-	            String createNameQuery = "CREATE UNIQUE INDEX " + ADDRESSPORT_INDEX + " ON " + TABLE_NAME + "(" +  USER_ADDRESS_FIELD + ", " + USER_RECEIVEPORT_FIELD  + ")"; 
+	            		" (" + USER_ADDRESS_FIELD + " TEXT NOT NULL, "+ USER_NAME_FIELD + " TEXT NOT NULL , " +  USER_RECEIVEPORT_FIELD + " TEXT NOT NULL , " + USER_AVALIABLITY_FIELD + " TEXT NOT NULL, " + 
+	            		USER_KEY_FIELD + " TEXT NOT NULL PRIMARY KEY, " + ALLOWED_USER_FIELD + " TEXT NOT NULL "  + ")";
+	            String createNameQuery = "CREATE UNIQUE INDEX " + ADDRESSPORT_INDEX + " ON " + TABLE_NAME + "(" +  USER_ADDRESS_FIELD + ", " + USER_NAME_FIELD  + ")"; 
+	            String createPortQuery = "CREATE UNIQUE INDEX " + ADDRESSNAME_INDEX + " ON " + TABLE_NAME + "(" +  USER_ADDRESS_FIELD + ", " + USER_RECEIVEPORT_FIELD  + ")"; 
 	            String createKeyQuery = "CREATE UNIQUE INDEX " + KEY_INDEX + " ON " + TABLE_NAME + "(" +  USER_KEY_FIELD + ")"; 
 				db.createTable(createTableQuery);
 				db.createIndex(createNameQuery);
+				db.createIndex(createPortQuery);
+
 				db.createIndex(createKeyQuery);
 				db.commit();
 			} catch (SqlJetException e){
@@ -64,14 +69,60 @@ public final class ServerUserDataBaseManager {
 			}}
 		
 	}
+
 	
 	public static void insertItem(InetAddress addr, String userName, Integer recPort, String isAvaliable, byte[] userKey, ArrayList<String> allowedListUser) throws SqlJetException{
 		String address = addr.getHostAddress();
 		String port = recPort.toString();
 		db.beginTransaction(SqlJetTransactionMode.WRITE);
 		ISqlJetTable table = db.getTable(TABLE_NAME);
-		table.insert(address, userName, port, isAvaliable, DatatypeConverter.printHexBinary(userKey), allowedListUser.toString());
+		ISqlJetCursor cursor = table.lookup(ADDRESSPORT_INDEX, addr.getHostAddress(), recPort);
+		if(cursor.eof()){
+			System.out.println("New user entry logged");
+			table.insert(address, userName, port, isAvaliable, DatatypeConverter.printHexBinary(userKey), allowedListUser.toString());
+		}
+		System.out.println("New Item is inserted to Message DataBase");
+
 	}
+	
+	public static void modifyUserStatus(User u, boolean isOn) throws SqlJetException{
+		db.beginTransaction(SqlJetTransactionMode.WRITE);
+		ISqlJetTable table = db.getTable(TABLE_NAME);
+		ISqlJetCursor cursor = table.lookup(ADDRESSPORT_INDEX, u.getAddr().getHostAddress(), String.valueOf(u.getRecevingPort()));
+		while(!cursor.eof()){
+			long index = cursor.getRowIndex();
+			Object[] newVal = cursor.getRowValues();
+			newVal[3] = String.valueOf(isOn);
+			cursor.updateWithRowId(index, newVal);
+		}
+	}
+	
+	
+	public static void modifyUserStatus(InetAddress addr, Integer port, boolean isOn) throws SqlJetException{
+		db.beginTransaction(SqlJetTransactionMode.WRITE);
+		ISqlJetTable table = db.getTable(TABLE_NAME);
+		ISqlJetCursor cursor = table.lookup(ADDRESSPORT_INDEX, addr.getHostAddress(), port.toString());
+		while(!cursor.eof()){
+			long index = cursor.getRowIndex();
+			Object[] newVal = cursor.getRowValues();
+			newVal[3] = "true";
+			cursor.updateWithRowId(index, newVal);
+		}
+	}
+	
+	
+	public static void modifyUserStatus(InetAddress addr, String name, boolean isOn) throws SqlJetException{
+		db.beginTransaction(SqlJetTransactionMode.WRITE);
+		ISqlJetTable table = db.getTable(TABLE_NAME);
+		ISqlJetCursor cursor = table.lookup(ADDRESSPORT_INDEX, addr.getHostAddress(), name);
+		while(!cursor.eof()){
+			long index = cursor.getRowIndex();
+			Object[] newVal = cursor.getRowValues();
+			newVal[3] = "true";
+			cursor.updateWithRowId(index, newVal);
+		}
+	}
+	
 	
 	public static CopyOnWriteArrayList<User> recoverUserData() throws UnknownHostException{
 		CopyOnWriteArrayList<User> userList = new CopyOnWriteArrayList<User>();
