@@ -89,6 +89,7 @@ public final class ServerUserDataBaseManager {
 			Object[] newVal = cursor.getRowValues();
 			newVal[3] = String.valueOf(status);
 			cursor.updateWithRowId(index, newVal);
+			cursor.next();
 		}
 	}
 	
@@ -102,6 +103,7 @@ public final class ServerUserDataBaseManager {
 			Object[] newVal = cursor.getRowValues();
 			newVal[3] = String.valueOf(status);
 			cursor.updateWithRowId(index, newVal);
+			cursor.next();
 		}
 	}
 	
@@ -115,6 +117,7 @@ public final class ServerUserDataBaseManager {
 			Object[] newVal = cursor.getRowValues();
 			newVal[3] = String.valueOf(status);
 			cursor.updateWithRowId(index, newVal);
+			cursor.next();
 		}
 	}
 	
@@ -122,6 +125,7 @@ public final class ServerUserDataBaseManager {
 	public static CopyOnWriteArrayList<User> recoverUserData() throws UnknownHostException, SqlJetException{
 		db.beginTransaction(SqlJetTransactionMode.WRITE);
 		CopyOnWriteArrayList<User> userList = new CopyOnWriteArrayList<User>();
+		System.out.println("Start recovering user data");
 		try {
 			ISqlJetCursor cursor = db.getTable(TABLE_NAME).open();
 			while(!(cursor.eof())){
@@ -133,8 +137,10 @@ public final class ServerUserDataBaseManager {
 				byte[] userKey = javax.xml.bind.DatatypeConverter.parseHexBinary(cursor.getString(USER_KEY_FIELD));
 				String rawList = cursor.getString(ALLOWED_USER_FIELD);
 				String[] uList = rawList.trim().substring(1, rawList.length()-1).split(",");
+				System.out.println(port + "\n" + name+ "\n" + avaliablity + "\n" + rawList);
 				User u = new User(name, addr, port, ava, userKey, new ArrayList<String>(Arrays.asList(uList)));
 				userList.add(u);
+				cursor.next();
 			}
 		} catch (SqlJetException e) {
 			// TODO Auto-generated catch block

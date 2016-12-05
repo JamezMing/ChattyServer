@@ -67,7 +67,7 @@ public class ServerManager {
 		}
 	}
 	
-	public void recoverFromDatabase() throws UnknownHostException{
+	public CopyOnWriteArrayList<User> recoverFromDatabase() throws UnknownHostException{
 		try {
 			userList = ServerUserDataBaseManager.recoverUserData();
 		} catch (SqlJetException e) {
@@ -76,9 +76,9 @@ public class ServerManager {
 		}
 		for(User u:userList){
 			u.recoverHistoryRequest(ServerMessageDataBaseManager.retrieveDataByUser(u.getAddr(), u.getRecevingPort()));
-			myController.addUsericonToList(u);
 		}
 		System.out.println("The data has been recovered. Current registered clients number : " + userList.size());
+		return userList;
 		
 	}
 	

@@ -145,9 +145,10 @@ public class ServerMessageDataBaseManager {
 			try{
 				db.beginTransaction(SqlJetTransactionMode.READ_ONLY);;
 				ISqlJetCursor cursor = db.getTable(TABLE_NAME).lookup(PORTUSER_INDEX, addr.getHostAddress(), port.toString());
-				while(cursor.next()){
+				while(!cursor.eof()){
 					Request req = new Request(cursor.getString(MESSAGE_INDEX_FIELD),InetAddress.getByName(cursor.getString(MESSAGE_SENDER_ADDRESS)), new Integer(cursor.getString(MESSAGE_SENDER_PORT)).intValue());
 					history.put(new Integer(cursor.getString(MESSAGE_INDEX_FIELD)), req);
+					cursor.next();
 				}
 				cursor.close();
 			}catch(SqlJetException e){

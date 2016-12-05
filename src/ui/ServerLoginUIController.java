@@ -1,5 +1,6 @@
 package ui;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -56,6 +57,7 @@ public class ServerLoginUIController extends AnchorPane {
 			ServerUserDataBaseManager.init();
 			ServerMainUIController con = new ServerMainUIController(recPort, sendPort, nextServerAddress, nextServerRecPort);
 			fxmlLoader.setController(con);
+			File dbFile = new File(ServerUserDataBaseManager.DB_NAME);
 			Stage preStage = (Stage) startButton.getScene().getWindow();
 			preStage.close();
 			System.out.println("Start Button Clicked");
@@ -64,6 +66,14 @@ public class ServerLoginUIController extends AnchorPane {
 			newSta.setTitle("Chatty Server");
 			newSta.setScene(new Scene(rootLayout));
 			newSta.show();
+			if(dbFile.exists()){
+				try {
+					con.recoverManagerData();
+				} catch (UnknownHostException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			newSta.setOnCloseRequest(new EventHandler<WindowEvent>(){
 				public void handle(WindowEvent we){
 					con.terminateManager();

@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import global.HasRegisteredException;
 import global.ServerUserDataBaseManager;
@@ -28,16 +29,15 @@ public class ServerMainUIController extends AnchorPane{
 	public ServerMainUIController(Integer recPort, Integer sendPort, InetAddress nextServerAddr, Integer nextServerRecPort){
 		myManager = new ServerManager(sendPort,recPort, nextServerAddr, nextServerRecPort, this);
 		System.out.println("Server Manager Contructed");
-		File dbFile = new File(ServerUserDataBaseManager.DB_NAME);
-		if(dbFile.exists()){
-			try {
-				myManager.recoverFromDatabase();
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 		myManager.init();
+	}
+	
+	public void recoverManagerData() throws UnknownHostException{
+		CopyOnWriteArrayList<User> uList = myManager.recoverFromDatabase();
+		for(User u: uList){
+			addUsericonToList(u);
+		}
+		
 	}
 	
 	public void refreshBoxDisplay(){
@@ -65,13 +65,18 @@ public class ServerMainUIController extends AnchorPane{
 	public void addUsericonToList(User user){
 		UserIconController icon = new UserIconController(myManager);
 		icon.initIcon(user.getName(), user.getAddr(), user.getRecevingPort());
+		if(user.returnAvaliability() == 1){
+			icon.setAvaliablity(true);
+		}
+		else if(user.returnAvaliability() == -1){
+			icon.setAvaliablity(false);
+		}
 		if(userList.size() >= 5){
 			return;
 		}
 		userList.add(icon);
 		userListBox.getChildren().add(icon);
 		System.out.println("New user icon added to the list");
-
 	}
 	
 	public void displayMessage(String msg){
