@@ -45,8 +45,7 @@ public class ServerManager {
 			nextServerPort = port;
 			hasNextServer = true;
 			myController = controller;
-			ServerMessageDataBaseManager.init();
-			ServerUserDataBaseManager.init();
+
 			
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
@@ -61,8 +60,7 @@ public class ServerManager {
 			nextServerAddr = InetAddress.getLocalHost();
 			nextServerPort = recevingPort;;
 			myController = controller;
-			ServerMessageDataBaseManager.init();
-			ServerUserDataBaseManager.init();
+
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -70,11 +68,17 @@ public class ServerManager {
 	}
 	
 	public void recoverFromDatabase() throws UnknownHostException{
-		userList = ServerUserDataBaseManager.recoverUserData();
+		try {
+			userList = ServerUserDataBaseManager.recoverUserData();
+		} catch (SqlJetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		for(User u:userList){
 			u.recoverHistoryRequest(ServerMessageDataBaseManager.retrieveDataByUser(u.getAddr(), u.getRecevingPort()));
 			myController.addUsericonToList(u);
 		}
+		System.out.println("The data has been recovered. Current registered clients number : " + userList.size());
 		
 	}
 	
@@ -169,7 +173,7 @@ public class ServerManager {
 		user.register();
 		userList.add(user);
 		myController.addUsericonToList(user);
-		ServerUserDataBaseManager.insertItem(user.getAddr(),user.getName() , user.getRecevingPort(),((Boolean)user.returnAvaliability()).toString(), user.getPublicKey(), user.getAllowedList());
+		ServerUserDataBaseManager.insertItem(user.getAddr(),user.getName() , user.getRecevingPort(),String.valueOf(user.returnAvaliability()), user.getPublicKey(), user.getAllowedList());
 		return 0;
 	}
 	
@@ -271,9 +275,13 @@ public class ServerManager {
 	}
 	
 	
-	protected void closeDown(){
-		serverListenSoc.close();
-		serverSendingSoc.close();
+	public void closeDown(){
+		if(serverListenSoc != null && serverListenSoc.isConnected()){
+			serverListenSoc.close();
+		}
+		if(serverSendingSoc != null && serverSendingSoc.isConnected()){
+			serverSendingSoc.close();
+		}
 		System.out.println("All Sockets are closed");
 	}
 	

@@ -19,7 +19,7 @@ import requestsParser.Request;
 
 public class ServerMessageDataBaseManager {
 	private static SqlJetDb db;
-	private static final String DB_NAME = "ServerMessageData.db";
+	public static final String DB_NAME = "ServerMessageData.db";
 	private static final String TABLE_NAME = "ServerMessage";
 	private static final String USER_ADDRESS_FIELD = "user_addr";
 	private static final String USER_NAME_FIELD = "user_name";
@@ -110,7 +110,7 @@ public class ServerMessageDataBaseManager {
 			db.beginTransaction(SqlJetTransactionMode.WRITE);
 			ISqlJetTable table = db.getTable(TABLE_NAME);
 			table.insert(addr.getHostAddress(), name, recPort.toString(), message, senderAddr.getHostAddress(), sendPort.toString(), messageIndex.toString());
-			System.out.println("New Item is inserted to Message DataBase");
+			System.out.println("New Message Record is inserted to Message DataBase");
 			db.commit(); 
 		}
 		
@@ -118,7 +118,7 @@ public class ServerMessageDataBaseManager {
 			try{
 				db.beginTransaction(SqlJetTransactionMode.WRITE);;
 				ISqlJetCursor cursor = db.getTable(TABLE_NAME).lookup(USER_INDEX, addr.getHostAddress(), name);
-				while(!cursor.eof()){
+				while(cursor.next()){
 					cursor.delete();
 				}
 				cursor.close();
@@ -145,7 +145,7 @@ public class ServerMessageDataBaseManager {
 			try{
 				db.beginTransaction(SqlJetTransactionMode.READ_ONLY);;
 				ISqlJetCursor cursor = db.getTable(TABLE_NAME).lookup(PORTUSER_INDEX, addr.getHostAddress(), port.toString());
-				while(!cursor.eof()){
+				while(cursor.next()){
 					Request req = new Request(cursor.getString(MESSAGE_INDEX_FIELD),InetAddress.getByName(cursor.getString(MESSAGE_SENDER_ADDRESS)), new Integer(cursor.getString(MESSAGE_SENDER_PORT)).intValue());
 					history.put(new Integer(cursor.getString(MESSAGE_INDEX_FIELD)), req);
 				}

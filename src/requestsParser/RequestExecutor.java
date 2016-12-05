@@ -97,7 +97,7 @@ public class RequestExecutor extends Thread{
 				status = 1;
 			}
 			else if(args[4].equalsIgnoreCase("off")||args[4].equalsIgnoreCase("false")){
-				status = 0;
+				status = -1;
 			}
 			else{
 				String responce = new String(GlobalVariables.PUBLISH_DENIED + GlobalVariables.delimiter + index.toString());
@@ -110,15 +110,15 @@ public class RequestExecutor extends Thread{
 				case 1:
 					isOn = true;
 					break;
-				case 0:
+				case -1:
 					isOn = false;
 					break;
 				default:
 					throw new Exception("The server is in an invalid state");
 				}
 				myManager.getUserList().get(key_tar).setReceivePort(new Integer(args[3]));
-				myManager.getUserList().get(key_tar).setAvaliability(isOn);
-				ServerUserDataBaseManager.modifyUserStatus(myManager.getUserList().get(key_tar), isOn);
+				myManager.getUserList().get(key_tar).setAvaliability(status);
+				ServerUserDataBaseManager.modifyUserStatus(myManager.getUserList().get(key_tar), status);
 				myManager.changeIconState(myManager.getUserList().get(key_tar), isOn);
 				String usernames = args[5];
 				String[] userNameList = usernames.split(" ");
@@ -174,7 +174,7 @@ public class RequestExecutor extends Thread{
 				new ServerSendingThread(myManager.getServerSendingPort(), myManager.getUserList().get(tar_key3), responce).start();
 				break;
 			}
-			else if(tarUser.returnAvaliability() == (Boolean) null){
+			else if(tarUser.returnAvaliability() == 0){
 				String responce = new String(GlobalVariables.USER_INFO_REQUEST_DENIED + GlobalVariables.delimiter + tarName);
 				new ServerSendingThread(myManager.getServerSendingPort(), myManager.getUserList().get(tar_key3), responce).start();
 				break;
@@ -184,7 +184,7 @@ public class RequestExecutor extends Thread{
 				new ServerSendingThread(myManager.getServerSendingPort(), myManager.getUserList().get(tar_key3), responce).start();
 				break;
 			}
-			else if(tarUser.returnAvaliability() == false){
+			else if(tarUser.returnAvaliability() == -1){
 				String responce = new String(GlobalVariables.USER_INFO_REQUEST_SUCCESS + GlobalVariables.delimiter  
 						+ index.toString() + GlobalVariables.delimiter + tarName + GlobalVariables.delimiter + "off");
 				new ServerSendingThread(myManager.getServerSendingPort(), myManager.getUserList().get(tar_key3), responce).start();

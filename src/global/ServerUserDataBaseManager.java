@@ -17,7 +17,7 @@ import org.tmatesoft.sqljet.core.table.SqlJetDb;
 
 public final class ServerUserDataBaseManager {
 	private static SqlJetDb db;
-	private static final String DB_NAME = "ServerUserData.db";
+	public static final String DB_NAME = "ServerUserData.db";
 	private static final String TABLE_NAME = "ServerUser";
 	private static final String USER_ADDRESS_FIELD = "user_address";
 	private static final String USER_NAME_FIELD = "user_name";
@@ -37,6 +37,7 @@ public final class ServerUserDataBaseManager {
 		System.out.println(dbFile.exists());
 		if(dbFile.exists()){
 			try {
+				System.out.println("User database found. ");
 				db = SqlJetDb.open(dbFile, true);
 				db.beginTransaction(SqlJetTransactionMode.WRITE);
 				db.getOptions().setUserVersion(1);
@@ -56,12 +57,10 @@ public final class ServerUserDataBaseManager {
 	            		USER_KEY_FIELD + " TEXT NOT NULL PRIMARY KEY, " + ALLOWED_USER_FIELD + " TEXT NOT NULL "  + ")";
 	            String createNameQuery = "CREATE UNIQUE INDEX " + ADDRESSPORT_INDEX + " ON " + TABLE_NAME + "(" +  USER_ADDRESS_FIELD + ", " + USER_NAME_FIELD  + ")"; 
 	            String createPortQuery = "CREATE UNIQUE INDEX " + ADDRESSNAME_INDEX + " ON " + TABLE_NAME + "(" +  USER_ADDRESS_FIELD + ", " + USER_RECEIVEPORT_FIELD  + ")"; 
-	            String createKeyQuery = "CREATE UNIQUE INDEX " + KEY_INDEX + " ON " + TABLE_NAME + "(" +  USER_KEY_FIELD + ")"; 
 				db.createTable(createTableQuery);
 				db.createIndex(createNameQuery);
 				db.createIndex(createPortQuery);
 
-				db.createIndex(createKeyQuery);
 				db.commit();
 			} catch (SqlJetException e){
 				// TODO Auto-generated catch block
@@ -76,67 +75,65 @@ public final class ServerUserDataBaseManager {
 		String port = recPort.toString();
 		db.beginTransaction(SqlJetTransactionMode.WRITE);
 		ISqlJetTable table = db.getTable(TABLE_NAME);
-		ISqlJetCursor cursor = table.lookup(ADDRESSPORT_INDEX, addr.getHostAddress(), recPort);
-		if(cursor.eof()){
-			System.out.println("New user entry logged");
-			table.insert(address, userName, port, isAvaliable, DatatypeConverter.printHexBinary(userKey), allowedListUser.toString());
-		}
-		System.out.println("New Item is inserted to Message DataBase");
-
+		System.out.println("New user entry logged. ");
+		table.insert(address, userName, port, isAvaliable, DatatypeConverter.printHexBinary(userKey), allowedListUser.toString());
+		db.commit();
 	}
 	
-	public static void modifyUserStatus(User u, boolean isOn) throws SqlJetException{
+	public static void modifyUserStatus(User u, int status) throws SqlJetException{
 		db.beginTransaction(SqlJetTransactionMode.WRITE);
 		ISqlJetTable table = db.getTable(TABLE_NAME);
 		ISqlJetCursor cursor = table.lookup(ADDRESSPORT_INDEX, u.getAddr().getHostAddress(), String.valueOf(u.getRecevingPort()));
 		while(!cursor.eof()){
 			long index = cursor.getRowIndex();
 			Object[] newVal = cursor.getRowValues();
-			newVal[3] = String.valueOf(isOn);
+			newVal[3] = String.valueOf(status);
 			cursor.updateWithRowId(index, newVal);
 		}
 	}
 	
 	
-	public static void modifyUserStatus(InetAddress addr, Integer port, boolean isOn) throws SqlJetException{
+	public static void modifyUserStatus(InetAddress addr, Integer port, int status) throws SqlJetException{
 		db.beginTransaction(SqlJetTransactionMode.WRITE);
 		ISqlJetTable table = db.getTable(TABLE_NAME);
 		ISqlJetCursor cursor = table.lookup(ADDRESSPORT_INDEX, addr.getHostAddress(), port.toString());
 		while(!cursor.eof()){
 			long index = cursor.getRowIndex();
 			Object[] newVal = cursor.getRowValues();
-			newVal[3] = "true";
+			newVal[3] = String.valueOf(status);
 			cursor.updateWithRowId(index, newVal);
 		}
 	}
 	
 	
-	public static void modifyUserStatus(InetAddress addr, String name, boolean isOn) throws SqlJetException{
+	public static void modifyUserStatus(InetAddress addr, String name, int status) throws SqlJetException{
 		db.beginTransaction(SqlJetTransactionMode.WRITE);
 		ISqlJetTable table = db.getTable(TABLE_NAME);
-		ISqlJetCursor cursor = table.lookup(ADDRESSPORT_INDEX, addr.getHostAddress(), name);
+		ISqlJetCursor cursor = table.lookup(ADDRESSNAME_INDEX, addr.getHostAddress(), name);
 		while(!cursor.eof()){
 			long index = cursor.getRowIndex();
 			Object[] newVal = cursor.getRowValues();
-			newVal[3] = "true";
+			newVal[3] = String.valueOf(status);
 			cursor.updateWithRowId(index, newVal);
 		}
 	}
 	
 	
-	public static CopyOnWriteArrayList<User> recoverUserData() throws UnknownHostException{
+	public static CopyOnWriteArrayList<User> recoverUserData() throws UnknownHostException, SqlJetException{
+		db.beginTransaction(SqlJetTransactionMode.WRITE);
 		CopyOnWriteArrayList<User> userList = new CopyOnWriteArrayList<User>();
 		try {
-			ISqlJetCursor cursor = db.getTable(TABLE_NAME).order(db.getTable(TABLE_NAME).getPrimaryKeyIndexName());
-			while(!cursor.eof()){
+			ISqlJetCursor cursor = db.getTable(TABLE_NAME).open();
+			while(!(cursor.eof())){
 				InetAddress addr = InetAddress.getByName(cursor.getString(USER_ADDRESS_FIELD));
 				Integer port = new Integer(cursor.getString(USER_RECEIVEPORT_FIELD));
 				String name = cursor.getString(USER_NAME_FIELD);
 				String avaliablity = cursor.getString(USER_AVALIABLITY_FIELD);
+				Integer ava = new Integer(avaliablity);
 				byte[] userKey = javax.xml.bind.DatatypeConverter.parseHexBinary(cursor.getString(USER_KEY_FIELD));
 				String rawList = cursor.getString(ALLOWED_USER_FIELD);
 				String[] uList = rawList.trim().substring(1, rawList.length()-1).split(",");
-				User u = new User(name, addr, port, avaliablity, userKey, new ArrayList<String>(Arrays.asList(uList)));
+				User u = new User(name, addr, port, ava, userKey, new ArrayList<String>(Arrays.asList(uList)));
 				userList.add(u);
 			}
 		} catch (SqlJetException e) {

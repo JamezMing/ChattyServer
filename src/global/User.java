@@ -21,7 +21,7 @@ public class User {
 	private int recevingPort;
 	private HashMap<Integer, Request> history = new HashMap<Integer, Request>();
 	private boolean isRegistered = false;
-	private boolean isAvaliable;
+	private int isAvaliable = 0;
 	private boolean toBeRecovered = false;
 	private ArrayList<String> allowedListofUser = new ArrayList<String>();
 	private byte[] userFingerPrint; 
@@ -69,19 +69,19 @@ public class User {
 		}
 	}
 	
-	public User(String username, InetAddress address, int recPortNumber, String avaliability, byte[] secretKey, ArrayList<String> friendsList){
+	public User(String username, InetAddress address, int recPortNumber, Integer avaliability, byte[] secretKey, ArrayList<String> friendsList){
 		usercount++;
 		name = username;
 		addr = address;
 		recevingPort = recPortNumber;
-		if(avaliability.equalsIgnoreCase("on")){
-			isAvaliable = true;
+		if(avaliability == 1){
+			isAvaliable = 1;
 		}
-		else if(avaliability.equalsIgnoreCase("off")){
-			isAvaliable = false;
+		else if(avaliability == -1){
+			isAvaliable = -1;
 		}
 		else{
-			isAvaliable = (Boolean) null;
+			isAvaliable = 0;
 			isRegistered = false;
 		}
 		userFingerPrint = secretKey;
@@ -161,11 +161,11 @@ public class User {
 	}
 
 	
-	public void setAvaliability(boolean ava){
+	public void setAvaliability(int ava){
 		isAvaliable = ava;
 	}
 	
-	public boolean returnAvaliability(){
+	public int returnAvaliability(){
 		return isAvaliable;
 	}
 	

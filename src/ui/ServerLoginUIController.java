@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import global.ServerMessageDataBaseManager;
 import global.ServerUserDataBaseManager;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -16,6 +17,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class ServerLoginUIController extends AnchorPane {
 	@FXML TextArea recPortField;
@@ -50,6 +52,8 @@ public class ServerLoginUIController extends AnchorPane {
 
 			String myAddr = InetAddress.getLocalHost().getHostAddress();
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ServerMainUI.fxml"));
+			ServerMessageDataBaseManager.init();
+			ServerUserDataBaseManager.init();
 			ServerMainUIController con = new ServerMainUIController(recPort, sendPort, nextServerAddress, nextServerRecPort);
 			fxmlLoader.setController(con);
 			Stage preStage = (Stage) startButton.getScene().getWindow();
@@ -60,6 +64,11 @@ public class ServerLoginUIController extends AnchorPane {
 			newSta.setTitle("Chatty Server");
 			newSta.setScene(new Scene(rootLayout));
 			newSta.show();
+			newSta.setOnCloseRequest(new EventHandler<WindowEvent>(){
+				public void handle(WindowEvent we){
+					con.terminateManager();
+				}
+			});
 		}catch(NumberFormatException e){
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Input Error");
