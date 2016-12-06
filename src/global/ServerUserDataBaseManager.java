@@ -88,7 +88,8 @@ public final class ServerUserDataBaseManager {
 			Object[] newVal = cursor.getRowValues();
 			newVal[5] = String.valueOf(listUserName);
 			System.out.println(newVal.toString());
-			cursor.updateWithRowId(index, newVal);
+			cursor.delete();
+			table.insert(newVal);
 			cursor.next();
 			db.commit();
 		}

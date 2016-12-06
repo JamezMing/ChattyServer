@@ -50,6 +50,7 @@ public class ServerMainUIController extends AnchorPane{
 	public void setUserIconState(User u, boolean state){
 		for (UserIconController user:userList){
 			if(user.isUserIcon(u)){
+				System.out.println("User Icon Found");
 				user.setAvaliablity(state);
 			}
 		}
@@ -64,13 +65,14 @@ public class ServerMainUIController extends AnchorPane{
 	
 	public void addUsericonToList(User user){
 		UserIconController icon = new UserIconController(myManager);
-		icon.initIcon(user.getName(), user.getAddr(), user.getRecevingPort());
 		if(user.returnAvaliability() == 1){
-			
-			icon.setAvaliablity(true);
+			icon.initIcon(user.getName(), user.getAddr(), user.getRecevingPort(), true);
 		}
 		else if(user.returnAvaliability() == -1){
-			icon.setAvaliablity(false);
+			icon.initIcon(user.getName(), user.getAddr(), user.getRecevingPort(), false);
+		}
+		else{
+			icon.initIcon(user.getName(), user.getAddr(), user.getRecevingPort());
 		}
 		if(userList.size() >= 5){
 			return;
