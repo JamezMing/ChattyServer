@@ -67,9 +67,11 @@ public class RequestExecutor extends Thread{
 				myManager.displayIncomingMessage(msgDisp);
 				myManager.displayIncomingMessage(msgDisp2);
 				new ServerSendingThread(myManager.getServerSendingPort(), newUser, responce).start();
+				
 			}
 			else{
 				String responce = new String(GlobalVariables.REGISTER_DENIED + GlobalVariables.delimiter + index.toString() + "error happened in processing");
+				myManager.displayIncomingMessage("Error happened while a client wish to register with the server\n");
 				new ServerSendingThread(myManager.getServerSendingPort(), newUser, responce).start();
 			}
 			break;
@@ -92,7 +94,7 @@ public class RequestExecutor extends Thread{
 				break;
 			}
 
-			int status = -1;
+			int status = 0;
 			if(args[4].equalsIgnoreCase("on")||args[4].equalsIgnoreCase("true")){
 				status = 1;
 			}
@@ -119,7 +121,9 @@ public class RequestExecutor extends Thread{
 				myManager.getUserList().get(key_tar).setReceivePort(new Integer(args[3]));
 				myManager.getUserList().get(key_tar).setAvaliability(status);
 				ServerUserDataBaseManager.modifyUserStatus(myManager.getUserList().get(key_tar), status);
-				myManager.changeIconState(myManager.getUserList().get(key_tar), isOn);
+				ServerUserDataBaseManager.modifyUserAllowList(myManager.getUserList().get(key_tar), args[5]);
+				if(status != 0)
+					myManager.changeIconState(myManager.getUserList().get(key_tar), isOn);
 				String usernames = args[5];
 				String[] userNameList = usernames.split(" ");
 				for (String n:userNameList){
@@ -128,6 +132,9 @@ public class RequestExecutor extends Thread{
 						myManager.getUserList().get(key_tar).makeFriend(u);
 					}
 				}
+				String msgDisp = new String(myManager.getUserList().get(key_tar).getName() + " has published a message and changed its user status to "  + 
+						String.valueOf(isOn) + "\n List of Users able to access the user is: " + usernames);
+				myManager.displayIncomingMessage(msgDisp);
 				String msgNew  = rawMsg.replace(GlobalVariables.PUBLISH_ACTION, GlobalVariables.PUBLISH_SUCCESS);
 				new ServerSendingThread(myManager.getServerSendingPort(), myManager.getUserList().get(key_tar), msgNew).start();
 			}

@@ -66,6 +66,7 @@ public class ServerMainUIController extends AnchorPane{
 		UserIconController icon = new UserIconController(myManager);
 		icon.initIcon(user.getName(), user.getAddr(), user.getRecevingPort());
 		if(user.returnAvaliability() == 1){
+			
 			icon.setAvaliablity(true);
 		}
 		else if(user.returnAvaliability() == -1){

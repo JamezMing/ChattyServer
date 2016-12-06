@@ -173,7 +173,7 @@ public class ServerManager {
 		user.register();
 		userList.add(user);
 		myController.addUsericonToList(user);
-		ServerUserDataBaseManager.insertItem(user.getAddr(),user.getName() , user.getRecevingPort(),String.valueOf(user.returnAvaliability()), user.getPublicKey(), user.getAllowedList());
+		ServerUserDataBaseManager.insertItem(user.getAddr(),user.getName() , user.getRecevingPort(),String.valueOf(user.returnAvaliability()), user.getSecret(), user.getAllowedList());
 		return 0;
 	}
 	

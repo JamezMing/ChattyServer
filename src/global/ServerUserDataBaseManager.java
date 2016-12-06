@@ -27,7 +27,6 @@ public final class ServerUserDataBaseManager {
 	private static final String USER_KEY_FIELD = "user_key";
 	private static final String ADDRESSPORT_INDEX = "addressport_index";
 	private static final String ADDRESSNAME_INDEX = "addressname_index";
-
 	private static final String KEY_INDEX = "key_index";
 	
 	private ServerUserDataBaseManager(){}
@@ -55,8 +54,8 @@ public final class ServerUserDataBaseManager {
 	            String createTableQuery = "CREATE TABLE " + TABLE_NAME + 
 	            		" (" + USER_ADDRESS_FIELD + " TEXT NOT NULL, "+ USER_NAME_FIELD + " TEXT NOT NULL , " +  USER_RECEIVEPORT_FIELD + " TEXT NOT NULL , " + USER_AVALIABLITY_FIELD + " TEXT NOT NULL, " + 
 	            		USER_KEY_FIELD + " TEXT NOT NULL PRIMARY KEY, " + ALLOWED_USER_FIELD + " TEXT NOT NULL "  + ")";
-	            String createNameQuery = "CREATE UNIQUE INDEX " + ADDRESSPORT_INDEX + " ON " + TABLE_NAME + "(" +  USER_ADDRESS_FIELD + ", " + USER_NAME_FIELD  + ")"; 
-	            String createPortQuery = "CREATE UNIQUE INDEX " + ADDRESSNAME_INDEX + " ON " + TABLE_NAME + "(" +  USER_ADDRESS_FIELD + ", " + USER_RECEIVEPORT_FIELD  + ")"; 
+	            String createNameQuery = "CREATE UNIQUE INDEX " + ADDRESSNAME_INDEX + " ON " + TABLE_NAME + "(" +  USER_ADDRESS_FIELD + ", " + USER_NAME_FIELD  + ")"; 
+	            String createPortQuery = "CREATE UNIQUE INDEX " + ADDRESSPORT_INDEX + " ON " + TABLE_NAME + "(" +  USER_ADDRESS_FIELD + ", " + USER_RECEIVEPORT_FIELD  + ")"; 
 				db.createTable(createTableQuery);
 				db.createIndex(createNameQuery);
 				db.createIndex(createPortQuery);
@@ -80,16 +79,40 @@ public final class ServerUserDataBaseManager {
 		db.commit();
 	}
 	
-	public static void modifyUserStatus(User u, int status) throws SqlJetException{
+	public static void modifyUserAllowList(User u, String listUserName) throws SqlJetException{
 		db.beginTransaction(SqlJetTransactionMode.WRITE);
 		ISqlJetTable table = db.getTable(TABLE_NAME);
 		ISqlJetCursor cursor = table.lookup(ADDRESSPORT_INDEX, u.getAddr().getHostAddress(), String.valueOf(u.getRecevingPort()));
 		while(!cursor.eof()){
 			long index = cursor.getRowIndex();
 			Object[] newVal = cursor.getRowValues();
-			newVal[3] = String.valueOf(status);
+			newVal[5] = String.valueOf(listUserName);
+			System.out.println(newVal.toString());
 			cursor.updateWithRowId(index, newVal);
 			cursor.next();
+			db.commit();
+		}
+
+	}
+	
+	
+	public static void modifyUserStatus(User u, int status) throws SqlJetException{
+		db.beginTransaction(SqlJetTransactionMode.WRITE);
+		ISqlJetTable table = db.getTable(TABLE_NAME);
+		ISqlJetCursor cursor = table.lookup(ADDRESSPORT_INDEX, u.getAddr().getHostAddress(), String.valueOf(u.getRecevingPort()));
+		System.out.println("User addr to search is: " + u.getAddr().getHostAddress());
+		System.out.println("User port to search is: " + String.valueOf(u.getRecevingPort()));
+		System.out.println("cursor is pointing to : " +  cursor.getRowIndex());
+		while(!cursor.eof()){
+			long index = cursor.getRowIndex();
+			Object[] newVal = cursor.getRowValues();
+			newVal[3] = String.valueOf(status);
+			System.out.println("The status is updated for user: " + u.getName() + " to status : " + newVal[3]);
+			System.out.println(newVal.toString());
+			cursor.delete();
+			table.insert(newVal);
+			cursor.next();
+			db.commit();
 		}
 	}
 	
@@ -102,8 +125,10 @@ public final class ServerUserDataBaseManager {
 			long index = cursor.getRowIndex();
 			Object[] newVal = cursor.getRowValues();
 			newVal[3] = String.valueOf(status);
+			System.out.println(newVal.toString());
 			cursor.updateWithRowId(index, newVal);
 			cursor.next();
+			db.commit();
 		}
 	}
 	
@@ -116,8 +141,10 @@ public final class ServerUserDataBaseManager {
 			long index = cursor.getRowIndex();
 			Object[] newVal = cursor.getRowValues();
 			newVal[3] = String.valueOf(status);
+			System.out.println(newVal.toString());
 			cursor.updateWithRowId(index, newVal);
 			cursor.next();
+			db.commit();
 		}
 	}
 	

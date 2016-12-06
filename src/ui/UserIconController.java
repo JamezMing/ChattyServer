@@ -33,7 +33,7 @@ public class UserIconController extends VBox {
     }
     
     public boolean isUserIcon(User u){
-    	if(u.getName().equals(nameField.getText()) && u.getAddr().getHostAddress().equals(addressField.getText()) && u.getRecevingPort() == new Integer(recevingPortField.getText())){
+    	if(u.getName().equals(nameField.getText()) && u.getAddr().getHostAddress().equals(addressField.getText())){
     		return true;
     	}
     	return false;
