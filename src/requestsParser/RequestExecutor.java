@@ -60,10 +60,10 @@ public class RequestExecutor extends Thread{
 				
 			}
 			else if((myManager.getNumOfUser() >= 5)){
-				String responce = new String(GlobalVariables.REGISTER_DENIED + GlobalVariables.delimiter + index.toString() + GlobalVariables.delimiter + 
-						myManager.getNextServerAddr().toString() + GlobalVariables.delimiter + new Integer(myManager.getNextServerPort()).toString());
+				String responce = new String(GlobalVariables.REGISTER_FULL + GlobalVariables.delimiter + index.toString() + GlobalVariables.delimiter + 
+						myManager.getNextServerAddr().getHostAddress() + GlobalVariables.delimiter + new Integer(myManager.getNextServerPort()).toString());
 				String msgDisp = new String(newUser.getName() + "( " + newUser.getAddr().getHostAddress() + " )" + " wants to register on this server but the server is full");
-				String msgDisp2 = new String("The client is refered to " + myManager.getNextServerAddr().toString());
+				String msgDisp2 = new String("The client is refered to " + myManager.getNextServerAddr().getHostAddress());
 				myManager.displayIncomingMessage(msgDisp);
 				myManager.displayIncomingMessage(msgDisp2);
 				new ServerSendingThread(myManager.getServerSendingPort(), newUser, responce).start();
@@ -164,44 +164,40 @@ public class RequestExecutor extends Thread{
 		case GlobalVariables.USER_INFO_REQUEST_ACTION:
 			index = new Integer(args[1]);
 			String tarName = args[2];
-			int tar_key3 = myManager.getUserIndexByKey(new BigInteger(args[3], 16).toByteArray());
-			if (myManager.getUserList().isEmpty() || tar_key3 == -1){
-				throw new Exception("The message is not sent from a validated user");
-			}
-			if(myManager.getUserList().get(tar_key3).logHistoryRequest(req, index) == false){
-				String responce = new String(GlobalVariables.USER_INFO_REQUEST_DENIED + GlobalVariables.delimiter + index.toString());
-				new ServerSendingThread(myManager.getServerSendingPort(), myManager.getUserList().get(tar_key3), responce).start();
-				break;
-			}
+			String myName = args[3];
+			Integer myPort = new Integer(args[4]);
+
 			User tarUser = myManager.findUserByName_Single(tarName);
 			if(tarUser == null){
 				String responce = new String(GlobalVariables.REFER_ACTION + GlobalVariables.delimiter + index.toString() + GlobalVariables.delimiter + myManager.getNextServerAddr().toString()
 						+ GlobalVariables.delimiter + myManager.getNextServerPort());
-				new ServerSendingThread(myManager.getServerSendingPort(), myManager.getUserList().get(tar_key3), responce).start();
+				new ServerSendingThread(myManager.getServerSendingPort(), req.getSenderAddr(), myPort, responce).start();
 				break;
 			}
 			else if(tarUser.returnAvaliability() == 0){
 				String responce = new String(GlobalVariables.USER_INFO_REQUEST_DENIED + GlobalVariables.delimiter + tarName);
-				new ServerSendingThread(myManager.getServerSendingPort(), myManager.getUserList().get(tar_key3), responce).start();
+				new ServerSendingThread(myManager.getServerSendingPort(), req.getSenderAddr(), myPort, responce).start();
 				break;
 			}
-			else if(!tarUser.isFriend(myManager.getUserList().get(tar_key3))){
+			else if(!tarUser.isFriend(myName)){
 				String responce = new String(GlobalVariables.USER_INFO_REQUEST_DENIED + GlobalVariables.delimiter + tarName);
-				new ServerSendingThread(myManager.getServerSendingPort(), myManager.getUserList().get(tar_key3), responce).start();
+				new ServerSendingThread(myManager.getServerSendingPort(), req.getSenderAddr(), myPort, responce).start();
 				break;
 			}
 			else if(tarUser.returnAvaliability() == -1){
 				String responce = new String(GlobalVariables.USER_INFO_REQUEST_SUCCESS + GlobalVariables.delimiter  
 						+ index.toString() + GlobalVariables.delimiter + tarName + GlobalVariables.delimiter + "off");
-				new ServerSendingThread(myManager.getServerSendingPort(), myManager.getUserList().get(tar_key3), responce).start();
+				new ServerSendingThread(myManager.getServerSendingPort(), req.getSenderAddr(), myPort, responce).start();
 				break;
 			}
 			else{
 				String responce = new String(GlobalVariables.USER_INFO_REQUEST_SUCCESS + GlobalVariables.delimiter  
 						+ index.toString() + GlobalVariables.delimiter + tarName + GlobalVariables.delimiter + tarUser.getRecevingPort()
 						+ GlobalVariables.delimiter + tarUser.getAddr().toString());
-				new ServerSendingThread(myManager.getServerSendingPort(), myManager.getUserList().get(tar_key3), responce).start();
+				new ServerSendingThread(myManager.getServerSendingPort(), req.getSenderAddr(), myPort, responce).start();
 			}
+			
+			//Format: info_a%_1%_James%_Molly%_2234 (Molly asking information about James)
 			break;
 
 				//TODO

@@ -195,9 +195,9 @@ public class User {
 		recevingPort = port;
 	}
 	
-	public boolean isFriend(String userSignature){
+	public boolean isFriend(String name){
 		for (String u: allowedListofUser){
-			if(u.equals(userSignature)){
+			if(u.equals(name)){
 				return true;
 			}
 		}
@@ -206,12 +206,13 @@ public class User {
 	
 	public boolean isFriend(User tar){
 		for (String u: allowedListofUser){
-			if(u.equals(DatatypeConverter.printHexBinary(tar.getSecret()))){
+			if(u.equals(tar.getName())){
 				return true;
 			}
 		}
 		return false;
 	}
+	
 	
 	
 
