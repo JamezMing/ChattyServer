@@ -283,6 +283,9 @@ public class ServerManager {
 			serverSendingSoc.close();
 		}
 		System.out.println("All Sockets are closed");
+		ServerUserDataBaseManager.closeConnect();
+		ServerMessageDataBaseManager.closeConnect();
+		System.out.println("Data Base Closed");
 	}
 	
 	

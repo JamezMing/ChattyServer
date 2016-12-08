@@ -109,7 +109,6 @@ public final class ServerUserDataBaseManager {
 			Object[] newVal = cursor.getRowValues();
 			newVal[3] = String.valueOf(status);
 			System.out.println("The status is updated for user: " + u.getName() + " to status : " + newVal[3]);
-			System.out.println(newVal.toString());
 			cursor.delete();
 			table.insert(newVal);
 			cursor.next();
@@ -126,8 +125,8 @@ public final class ServerUserDataBaseManager {
 			long index = cursor.getRowIndex();
 			Object[] newVal = cursor.getRowValues();
 			newVal[3] = String.valueOf(status);
-			System.out.println(newVal.toString());
-			cursor.updateWithRowId(index, newVal);
+			cursor.delete();
+			table.insert(newVal);
 			cursor.next();
 			db.commit();
 		}
@@ -142,8 +141,8 @@ public final class ServerUserDataBaseManager {
 			long index = cursor.getRowIndex();
 			Object[] newVal = cursor.getRowValues();
 			newVal[3] = String.valueOf(status);
-			System.out.println(newVal.toString());
-			cursor.updateWithRowId(index, newVal);
+			cursor.delete();
+			table.insert(newVal);
 			cursor.next();
 			db.commit();
 		}
@@ -177,6 +176,14 @@ public final class ServerUserDataBaseManager {
 		return userList;
 	}
 	
+	public static void closeConnect(){
+		try {
+			db.close();
+		} catch (SqlJetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	
 	

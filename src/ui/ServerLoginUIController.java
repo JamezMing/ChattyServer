@@ -2,6 +2,7 @@ package ui;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.BindException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import global.ServerMessageDataBaseManager;
@@ -65,6 +66,7 @@ public class ServerLoginUIController extends AnchorPane {
 			Stage newSta = new Stage();
 			newSta.setTitle("Chatty Server");
 			newSta.setScene(new Scene(rootLayout));
+
 			newSta.show();
 			if(dbFile.exists()){
 				try {
@@ -93,7 +95,13 @@ public class ServerLoginUIController extends AnchorPane {
 			alert.setContentText("Please input a valid IP address!");
 			alert.showAndWait();
 			System.out.println(f);
-
+		}catch(BindException g){
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Address Port Error");
+			alert.setHeaderText(null);
+			alert.setContentText("Current address or port is in use!");
+			alert.showAndWait();
+			System.out.println(g);
 		}
 		
 	}

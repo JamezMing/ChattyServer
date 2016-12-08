@@ -4,6 +4,8 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollBar?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
@@ -34,11 +36,19 @@
                 </Menu>
               </menus>
             </MenuBar>
-            <TextField fx:id="messageInputField" layoutX="155.0" layoutY="445.0" prefHeight="25.0" prefWidth="380.0" />
+            <TextField fx:id="messageInputField" layoutX="161.0" layoutY="445.0" prefHeight="25.0" prefWidth="374.0" />
             <Button fx:id="sendButton" layoutX="540.0" layoutY="445.0" mnemonicParsing="false" onMouseClicked="#inSendBtnClicked" prefHeight="25.0" prefWidth="55.0" text="Send" />
-            <VBox fx:id="userListBox" layoutY="25.0" prefHeight="455.0" prefWidth="150.0" />
-            <Separator layoutX="147.0" layoutY="25.0" orientation="VERTICAL" prefHeight="455.0" prefWidth="2.0" />
-            <TextArea fx:id="messageDisplayArea" blendMode="MULTIPLY" depthTest="DISABLE" editable="false" layoutX="155.0" layoutY="30.0" maxHeight="408.0" minHeight="30.0" prefHeight="408.0" prefWidth="440.0" />
+            <Separator layoutX="157.0" layoutY="25.0" orientation="VERTICAL" prefHeight="455.0" prefWidth="2.0" />
+            <TextArea fx:id="messageDisplayArea" blendMode="MULTIPLY" depthTest="DISABLE" editable="false" layoutX="160.0" layoutY="30.0" minHeight="30.0" prefHeight="408.0" prefWidth="435.0" />
+            <ScrollPane layoutX="1.0" layoutY="24.0" prefHeight="455.0" prefWidth="155.0">
+               <content>
+                  <VBox fx:id="userListBox" prefHeight="455.0" prefWidth="150.0" >
+                     <children>
+                        <Separator prefHeight="3.0" prefWidth="150.0" />
+                     </children>
+                  </VBox>
+               </content>
+            </ScrollPane>
          </children>
       </AnchorPane>
    </children>

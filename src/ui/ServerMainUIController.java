@@ -9,8 +9,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import global.HasRegisteredException;
 import global.ServerUserDataBaseManager;
 import global.User;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
@@ -22,15 +25,18 @@ public class ServerMainUIController extends AnchorPane{
 	@FXML Button sendButton;
 	@FXML VBox userListBox;
 	@FXML TextArea messageDisplayArea;
+	@FXML ScrollBar scrollBar;
 	private ServerManager myManager;
 	private ArrayList<UserIconController> userList = new ArrayList<UserIconController>();
 	private ArrayList<String> messageHistory = new ArrayList<String>();
+	
 	
 	public ServerMainUIController(Integer recPort, Integer sendPort, InetAddress nextServerAddr, Integer nextServerRecPort){
 		myManager = new ServerManager(sendPort,recPort, nextServerAddr, nextServerRecPort, this);
 		System.out.println("Server Manager Contructed");
 		myManager.init();
 	}
+	
 	
 	public void recoverManagerData() throws UnknownHostException{
 		CopyOnWriteArrayList<User> uList = myManager.recoverFromDatabase();

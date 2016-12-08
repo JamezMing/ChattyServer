@@ -12,7 +12,7 @@
 <fx:root type="javafx.scene.layout.VBox" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.60">
    <children>
       <Separator layoutY="1.0" prefHeight="0.0" prefWidth="150.0" />
-      <AnchorPane mouseTransparent="true" prefHeight="150.0" prefWidth="150.0">
+      <AnchorPane mouseTransparent="true" prefHeight="150.0" prefWidth="145.0">
          <children>
             <Label fx:id="addressField" layoutX="15.0" layoutY="55.0" prefHeight="20.0" prefWidth="128.0" text="IP Address">
                <effect>

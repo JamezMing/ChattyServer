@@ -147,8 +147,7 @@ public class RequestExecutor extends Thread{
 			index = new Integer(args[1]);
 			int tar_2 = myManager.getUserInList(args[2], req.getSenderAddr());
 			int tar_key2 = myManager.getUserIndexByKey(new BigInteger(args[3], 16).toByteArray());
-			System.out.println(tar_2);
-			System.out.println(tar_key2);
+			System.out.println("User Index Retrieved: " + tar_key2);
 			if (myManager.getUserList().isEmpty() || tar_key2 == -1){
 				throw new Exception("The message is not sent from a validated user");
 			}
