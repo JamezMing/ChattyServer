@@ -2,6 +2,7 @@ package ui;
 
 import java.io.IOException;
 
+import global.ServerLogger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -31,6 +32,7 @@ public class ServerLoginMain extends Application {
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
             primaryStage.show();
+            ServerLogger.init();
             
         } catch (IOException e) {
             e.printStackTrace();

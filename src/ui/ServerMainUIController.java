@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import global.HasRegisteredException;
+import global.ServerLogger;
 import global.ServerUserDataBaseManager;
 import global.User;
 import javafx.beans.value.ChangeListener;
@@ -33,7 +34,7 @@ public class ServerMainUIController extends AnchorPane{
 	
 	public ServerMainUIController(Integer recPort, Integer sendPort, InetAddress nextServerAddr, Integer nextServerRecPort){
 		myManager = new ServerManager(sendPort,recPort, nextServerAddr, nextServerRecPort, this);
-		System.out.println("Server Manager Contructed");
+		ServerLogger.log("Server Manager Contructed");
 		myManager.init();
 	}
 	
@@ -56,7 +57,7 @@ public class ServerMainUIController extends AnchorPane{
 	public void setUserIconState(User u, boolean state){
 		for (UserIconController user:userList){
 			if(user.isUserIcon(u)){
-				System.out.println("User Icon Found");
+				ServerLogger.log("User Icon Found");
 				user.setAvaliablity(state);
 			}
 		}
@@ -85,7 +86,7 @@ public class ServerMainUIController extends AnchorPane{
 		}
 		userList.add(icon);
 		userListBox.getChildren().add(icon);
-		System.out.println("New user icon added to the list");
+		ServerLogger.log("New user icon added to the list");
 	}
 	
 	public void displayMessage(String msg){

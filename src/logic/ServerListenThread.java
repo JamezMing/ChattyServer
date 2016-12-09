@@ -1,6 +1,8 @@
 package logic;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+
+import global.ServerLogger;
 import requestsParser.*;
 
 public class ServerListenThread extends Thread{
@@ -25,7 +27,7 @@ public class ServerListenThread extends Thread{
 				
 				//TODO
 				myManager.broadCast(str_receive,recPac.getAddress());
-				System.out.println(str_receive);
+				ServerLogger.log(str_receive);
 				recPac.setLength(1024);
 			}
 			recSoc.close();

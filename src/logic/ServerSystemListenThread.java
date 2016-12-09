@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import global.ServerLogger;
+
 public class ServerSystemListenThread extends Thread{
 	ServerManager myManager; 
 	public ServerSystemListenThread(ServerManager father){
@@ -16,7 +18,7 @@ public class ServerSystemListenThread extends Thread{
 		while(true){
 			String msg;
 			while ((msg = reader.readLine()) == null) {
-				System.out.println("Preparing Reader...");
+				ServerLogger.log("Preparing Reader...");
 				Thread.sleep(100);
 			}
 	        if(msg.equals("EXIT")){
@@ -30,7 +32,7 @@ public class ServerSystemListenThread extends Thread{
 			e.printStackTrace();
 		}
 		
-		System.out.println("The client has closed its connection");
+		ServerLogger.log("The client has closed its connection");
 	}
 		
 }

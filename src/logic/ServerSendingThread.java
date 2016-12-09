@@ -3,6 +3,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import global.ServerLogger;
 import global.User;
 import java.io.IOException;
 
@@ -30,12 +31,12 @@ public class ServerSendingThread extends Thread{
 	
 	
 	public void run(){
-		System.out.println(message);
+		ServerLogger.log(message);
         DatagramPacket sendPac = new DatagramPacket(message.getBytes(), message.length(), recAddr, recPort);
         try {
 			dataSendPort.send(sendPac);
-			System.out.println("Message sent: " + message);
-			System.out.println("Message Destination: " + recAddr.getHostAddress() + " Destination Port: " + recPort);
+			ServerLogger.log("Message sent: " + message);
+			ServerLogger.log("Message Destination: " + recAddr.getHostAddress() + " Destination Port: " + recPort);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

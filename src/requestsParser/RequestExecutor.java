@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import javax.xml.bind.DatatypeConverter;
 import global.GlobalVariables;
 import global.HasRegisteredException;
+import global.ServerLogger;
 import global.ServerUserDataBaseManager;
 import global.User;
 import javafx.application.Platform;
@@ -79,8 +80,7 @@ public class RequestExecutor extends Thread{
 			index = new Integer(args[1]);
 			int tar = myManager.getUserInList(args[2], req.getSenderAddr());
 			int key_tar = myManager.getUserIndexByKey(new BigInteger(args[6], 16).toByteArray());
-			System.out.println(new Integer(tar));
-			System.out.println(new Integer(key_tar));
+			ServerLogger.log("Index Found: " + new Integer(tar).toString());
 			if(key_tar != tar){
 				throw new Exception("Authentification error");
 			}
@@ -148,7 +148,7 @@ public class RequestExecutor extends Thread{
 			index = new Integer(args[1]);
 			int tar_2 = myManager.getUserInList(args[2], req.getSenderAddr());
 			int tar_key2 = myManager.getUserIndexByKey(new BigInteger(args[3], 16).toByteArray());
-			System.out.println("User Index Retrieved: " + tar_key2);
+			ServerLogger.log("User Index Retrieved: " + tar_key2);
 			if (myManager.getUserList().isEmpty() || tar_key2 == -1){
 				throw new Exception("The message is not sent from a validated user");
 			}
@@ -166,12 +166,12 @@ public class RequestExecutor extends Thread{
 			index = new Integer(args[1]);
 			String name = args[2];
 			int tar_key_in = myManager.getUserIndexByKey(new BigInteger(args[3], 16).toByteArray());
-			System.out.println("User Index Retrieved: " + tar_key_in);
+			ServerLogger.log("User Index Retrieved: " + tar_key_in);
 			if (myManager.getUserList().isEmpty() || tar_key_in == -1){
 				throw new Exception("The message is not sent from a validated user");
 			}
 			if(myManager.getUserList().get(tar_key_in).logHistoryRequest(req, index) == false){
-				System.out.println("A duplicate message number has found");
+				ServerLogger.log("A duplicate message number has found");
 				break;
 			}
 			String listOfUser = myManager.getUserList().get(tar_key_in).returnStringListOfUser();
@@ -230,8 +230,8 @@ public class RequestExecutor extends Thread{
 
 	
 	public void run(){
-		System.out.println("The Request has been received");
-		System.out.println(rawMsg);
+		ServerLogger.log("The Request has been received");
+		ServerLogger.log(rawMsg);
 		fields = rawMsg.split(GlobalVariables.token);
 		if(fields.length == 1){
 			try {

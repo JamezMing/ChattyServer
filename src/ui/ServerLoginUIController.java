@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.BindException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+
+import global.ServerLogger;
 import global.ServerMessageDataBaseManager;
 import global.ServerUserDataBaseManager;
 import javafx.event.EventHandler;
@@ -42,13 +44,13 @@ public class ServerLoginUIController extends AnchorPane {
 				nextServerRecPort =  new Integer(nextServerPortField.getText());
 				nextServerAddress = InetAddress.getByName(nextServerAddressField.getText());
 			}else{
-				System.out.println("The next server fields are empty");
-				System.out.println("Default Address is " + nextServerAddress.getHostAddress());
-				System.out.println("Default port is " + nextServerRecPort);
+				ServerLogger.log("The next server fields are empty");
+				ServerLogger.log("Default Address is " + nextServerAddress.getHostAddress());
+				ServerLogger.log("Default port is " + nextServerRecPort);
 
 			}
 			if(recPort >= 65536 || recPort < 0 ||sendPort >= 65536 || sendPort < 0 ){
-				System.out.println(recPort+ " " + sendPort);
+				ServerLogger.log(recPort+ " " + sendPort);
 				throw new NumberFormatException();
 			}
 
@@ -61,7 +63,7 @@ public class ServerLoginUIController extends AnchorPane {
 			File dbFile = new File(ServerUserDataBaseManager.DB_NAME);
 			Stage preStage = (Stage) startButton.getScene().getWindow();
 			preStage.close();
-			System.out.println("Start Button Clicked");
+			ServerLogger.log("Start Button Clicked");
 			AnchorPane rootLayout = (AnchorPane) fxmlLoader.load();
 			Stage newSta = new Stage();
 			newSta.setTitle("Chatty Server");
@@ -87,21 +89,21 @@ public class ServerLoginUIController extends AnchorPane {
 			alert.setHeaderText(null);
 			alert.setContentText("Please input a valid port number!");
 			alert.showAndWait();
-			System.out.println(e);
+			ServerLogger.log(e.getMessage());
 		}catch(UnknownHostException f){
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Input Error");
 			alert.setHeaderText(null);
 			alert.setContentText("Please input a valid IP address!");
 			alert.showAndWait();
-			System.out.println(f);
+			ServerLogger.log(f.getMessage());
 		}catch(BindException g){
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Address Port Error");
 			alert.setHeaderText(null);
 			alert.setContentText("Current address or port is in use!");
 			alert.showAndWait();
-			System.out.println(g);
+			ServerLogger.log(g.getMessage());
 		}
 		
 	}

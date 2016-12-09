@@ -13,6 +13,8 @@ import javax.crypto.interfaces.DHPublicKey;
 import javax.crypto.spec.*;
 import javax.xml.bind.DatatypeConverter;
 
+import global.ServerLogger;
+
 
 public class ServerSignatureGen{
 	DHParameterSpec dhParamSpec;
@@ -56,7 +58,7 @@ public class ServerSignatureGen{
 	
 	public byte[] getPublicKey(){
 		if(isInit == false){
-			System.out.println("Generator has not been initiated yet.");
+			ServerLogger.log("Generator has not been initiated yet.");
 			return null;
 		}
 		return myKeyPair.getPublic().getEncoded();
@@ -64,7 +66,7 @@ public class ServerSignatureGen{
 	
 	public byte[] getPrivateKey(){
 		if(isInit = false){
-			System.out.println("Generator has not been initiated yet.");
+			ServerLogger.log("Generator has not been initiated yet.");
 			return null;
 		}
 		return myKeyPair.getPrivate().getEncoded();

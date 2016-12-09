@@ -14,6 +14,7 @@ import javax.xml.bind.DatatypeConverter;
 import org.tmatesoft.sqljet.core.SqlJetException;
 
 import global.HasRegisteredException;
+import global.ServerLogger;
 import global.ServerMessageDataBaseManager;
 import global.ServerUserDataBaseManager;
 import global.User;
@@ -77,7 +78,7 @@ public class ServerManager {
 		for(User u:userList){
 			u.recoverHistoryRequest(ServerMessageDataBaseManager.retrieveDataByUser(u.getAddr(), u.getRecevingPort()));
 		}
-		System.out.println("The data has been recovered. Current registered clients number : " + userList.size());
+		ServerLogger.log("The data has been recovered. Current registered clients number : " + userList.size());
 		return userList;
 		
 	}
@@ -85,7 +86,7 @@ public class ServerManager {
 	public int getUserIndexByKey(byte[] key){
 		for (User u:userList){
 			if(Arrays.equals(u.getSecret(), key)){
-				System.out.println("User Key Found");
+				ServerLogger.log("User Key Found");
 				return userList.indexOf(u); 
 			}
 		}
@@ -97,7 +98,7 @@ public class ServerManager {
 		lisTh.start();
 		ServerSystemListenThread sysTh = new ServerSystemListenThread(this);
 		sysTh.start();
-		System.out.println("Server Manager initialized");
+		ServerLogger.log("Server Manager initialized");
 	}
 	
 		
@@ -212,7 +213,7 @@ public class ServerManager {
 	public synchronized int getUserInList(String name, InetAddress addr){
 		for(User u:userList){
 			if(u.getName().equals(name) && u.getAddr().equals(addr)){
-				System.out.println("User Found");
+				ServerLogger.log("User Found");
 				return userList.indexOf(u);
 			}
 		}
@@ -283,10 +284,10 @@ public class ServerManager {
 		if(serverSendingSoc != null && serverSendingSoc.isConnected()){
 			serverSendingSoc.close();
 		}
-		System.out.println("All Sockets are closed");
+		ServerLogger.log("All Sockets are closed");
 		ServerUserDataBaseManager.closeConnect();
 		ServerMessageDataBaseManager.closeConnect();
-		System.out.println("Data Base Closed");
+		ServerLogger.log("Data Base Closed");
 	}
 	
 	

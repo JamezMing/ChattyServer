@@ -36,7 +36,7 @@ public class ServerMessageDataBaseManager {
 		
 	public static void init(){
 		File dbFile = new File(DB_NAME);
-		System.out.println("Database file is created: " + dbFile.exists());
+		ServerLogger.log("Database file is created: " + dbFile.exists());
 		if(dbFile.exists()){
 			try {
 				db = SqlJetDb.open(dbFile, true);
@@ -68,7 +68,7 @@ public class ServerMessageDataBaseManager {
 				db.createIndex(createPortUserQuery);
 				
 				db.commit();
-				System.out.println("Database file is now created " );
+				ServerLogger.log("Database file is now created " );
 
 			} catch (SqlJetException e){
 				// TODO Auto-generated catch block
@@ -87,7 +87,7 @@ public class ServerMessageDataBaseManager {
 				db.commit();
 				return res;
 			}catch(SqlJetException e){
-				System.out.println("An error in database has ocurred.");
+				ServerLogger.log("An error in database has ocurred.");
 				return null;
 			}
 		}
@@ -100,8 +100,8 @@ public class ServerMessageDataBaseManager {
 				db.commit();
 				return res;
 			}catch(SqlJetException e){
-				System.out.println("An error in database has ocurred.");
-				System.out.println(e);
+				ServerLogger.log("An error in database has ocurred.");
+				ServerLogger.log(e.getMessage());
 				return null;
 			}
 		}
@@ -110,7 +110,7 @@ public class ServerMessageDataBaseManager {
 			db.beginTransaction(SqlJetTransactionMode.WRITE);
 			ISqlJetTable table = db.getTable(TABLE_NAME);
 			table.insert(addr.getHostAddress(), name, recPort.toString(), message, senderAddr.getHostAddress(), sendPort.toString(), messageIndex.toString());
-			System.out.println("New Message Record is inserted to Message DataBase");
+			ServerLogger.log("New Message Record is inserted to Message DataBase");
 			db.commit(); 
 		}
 		
@@ -123,7 +123,7 @@ public class ServerMessageDataBaseManager {
 				}
 				cursor.close();
 			}catch(SqlJetException e){
-				System.out.println("An error in database has ocurred when delete user record.");
+				ServerLogger.log("An error in database has ocurred when delete user record.");
 			}
 		}
 		
@@ -136,7 +136,7 @@ public class ServerMessageDataBaseManager {
 				}
 				cursor.close();
 			}catch(SqlJetException e){
-				System.out.println("An error in database has ocurred when delete user record.");
+				ServerLogger.log("An error in database has ocurred when delete user record.");
 			}
 		}
 		
@@ -152,7 +152,7 @@ public class ServerMessageDataBaseManager {
 				}
 				cursor.close();
 			}catch(SqlJetException e){
-				System.out.println("An error in database has ocurred when recovering user record.");
+				ServerLogger.log("An error in database has ocurred when recovering user record.");
 			}
 			return history;
 			

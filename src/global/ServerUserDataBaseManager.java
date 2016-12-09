@@ -33,10 +33,10 @@ public final class ServerUserDataBaseManager {
 	
 	public static void init(){
 		File dbFile = new File(DB_NAME);
-		System.out.println(dbFile.exists());
+		ServerLogger.log("The data file exists: " + String.valueOf(dbFile.exists()));
 		if(dbFile.exists()){
 			try {
-				System.out.println("User database found. ");
+				ServerLogger.log("User database found. ");
 				db = SqlJetDb.open(dbFile, true);
 				db.beginTransaction(SqlJetTransactionMode.WRITE);
 				db.getOptions().setUserVersion(1);
@@ -74,7 +74,7 @@ public final class ServerUserDataBaseManager {
 		String port = recPort.toString();
 		db.beginTransaction(SqlJetTransactionMode.WRITE);
 		ISqlJetTable table = db.getTable(TABLE_NAME);
-		System.out.println("New user entry logged. ");
+		ServerLogger.log("New user entry logged. ");
 		table.insert(address, userName, port, isAvaliable, DatatypeConverter.printHexBinary(userKey), allowedListUser.toString());
 		db.commit();
 	}
@@ -87,7 +87,7 @@ public final class ServerUserDataBaseManager {
 			long index = cursor.getRowIndex();
 			Object[] newVal = cursor.getRowValues();
 			newVal[5] = String.valueOf(listUserName);
-			System.out.println(newVal.toString());
+			ServerLogger.log(newVal.toString());
 			cursor.delete();
 			table.insert(newVal);
 			cursor.next();
@@ -101,14 +101,14 @@ public final class ServerUserDataBaseManager {
 		db.beginTransaction(SqlJetTransactionMode.WRITE);
 		ISqlJetTable table = db.getTable(TABLE_NAME);
 		ISqlJetCursor cursor = table.lookup(ADDRESSPORT_INDEX, u.getAddr().getHostAddress(), String.valueOf(u.getRecevingPort()));
-		System.out.println("User addr to search is: " + u.getAddr().getHostAddress());
-		System.out.println("User port to search is: " + String.valueOf(u.getRecevingPort()));
-		System.out.println("cursor is pointing to : " +  cursor.getRowIndex());
+		ServerLogger.log("User addr to search is: " + u.getAddr().getHostAddress());
+		ServerLogger.log("User port to search is: " + String.valueOf(u.getRecevingPort()));
+		ServerLogger.log("cursor is pointing to : " +  cursor.getRowIndex());
 		while(!cursor.eof()){
 			long index = cursor.getRowIndex();
 			Object[] newVal = cursor.getRowValues();
 			newVal[3] = String.valueOf(status);
-			System.out.println("The status is updated for user: " + u.getName() + " to status : " + newVal[3]);
+			ServerLogger.log("The status is updated for user: " + u.getName() + " to status : " + newVal[3]);
 			cursor.delete();
 			table.insert(newVal);
 			cursor.next();
@@ -152,7 +152,7 @@ public final class ServerUserDataBaseManager {
 	public static CopyOnWriteArrayList<User> recoverUserData() throws UnknownHostException, SqlJetException{
 		db.beginTransaction(SqlJetTransactionMode.WRITE);
 		CopyOnWriteArrayList<User> userList = new CopyOnWriteArrayList<User>();
-		System.out.println("Start recovering user data");
+		ServerLogger.log("Start recovering user data");
 		try {
 			ISqlJetCursor cursor = db.getTable(TABLE_NAME).open();
 			while(!(cursor.eof())){
@@ -164,7 +164,7 @@ public final class ServerUserDataBaseManager {
 				byte[] userKey = javax.xml.bind.DatatypeConverter.parseHexBinary(cursor.getString(USER_KEY_FIELD));
 				String rawList = cursor.getString(ALLOWED_USER_FIELD);
 				String[] uList = rawList.trim().substring(1, rawList.length()-1).split(",");
-				System.out.println(port + "\n" + name+ "\n" + avaliablity + "\n" + rawList);
+				ServerLogger.log(port + "\n" + name+ "\n" + avaliablity + "\n" + rawList);
 				User u = new User(name, addr, port, ava, userKey, new ArrayList<String>(Arrays.asList(uList)));
 				userList.add(u);
 				cursor.next();

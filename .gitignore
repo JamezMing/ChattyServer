@@ -69,3 +69,5 @@ $RECYCLE.BIN/
 /build/
 ServerUserData.db-journal
 ServerMessageData.db-journal
+*.lck
+ServerOutput.txt
