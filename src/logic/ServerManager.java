@@ -147,6 +147,7 @@ public class ServerManager {
 	
 	public void changeIconState(User u, boolean isOn){
 		myController.setUserIconState(u, isOn);
+		myController.refreshBoxDisplay();
 	}
 	
 	

@@ -67,7 +67,7 @@ public class RequestExecutor extends Thread{
 				myManager.displayIncomingMessage(msgDisp);
 				myManager.displayIncomingMessage(msgDisp2);
 				new ServerSendingThread(myManager.getServerSendingPort(), newUser, responce).start();
-				
+
 			}
 			else{
 				String responce = new String(GlobalVariables.REGISTER_DENIED + GlobalVariables.delimiter + index.toString() + "error happened in processing");
@@ -125,12 +125,13 @@ public class RequestExecutor extends Thread{
 				if(status != 0)
 					myManager.changeIconState(myManager.getUserList().get(key_tar), isOn);
 				String usernames = args[5];
-				String[] userNameList = usernames.split(" ");
+				usernames = usernames.trim();
+				usernames = usernames.substring(1, usernames.length()-1);
+				String[] userNameList = usernames.split(",");
+				myManager.getUserList().get(key_tar).resetFriendList();
 				for (String n:userNameList){
-					User u = myManager.findUserByName_Single(n);
-					if(u!=null){
-						myManager.getUserList().get(key_tar).makeFriend(u);
-					}
+						n = n.trim();
+						myManager.getUserList().get(key_tar).makeFriend(n);
 				}
 				String msgDisp = new String(myManager.getUserList().get(key_tar).getName() + " has published a message and changed its user status to "  + 
 						String.valueOf(isOn) + "\n List of Users able to access the user is: " + usernames);
@@ -151,25 +152,48 @@ public class RequestExecutor extends Thread{
 			if (myManager.getUserList().isEmpty() || tar_key2 == -1){
 				throw new Exception("The message is not sent from a validated user");
 			}
-			if(myManager.getUserList().get(tar_key2).hasIndexLogged(index) == false){
+			if(!myManager.getUserList().get(tar_key2).logHistoryRequest(req, index) == false){
 				String responce = new String(GlobalVariables.INFORMATION_REQUEST_DENIED + GlobalVariables.delimiter + index.toString());
 				new ServerSendingThread(myManager.getServerSendingPort(), myManager.getUserList().get(tar_key2), responce).start();
 				break;
 			}
 			Request retrieved = myManager.getUserList().get(tar_key2).retrieveHistoryItem(index);
-			String msgNew = retrieved.getMessage();
+			String msgNew = new String(GlobalVariables.IMFORMATION_REQUEST_SUCCESS + GlobalVariables.delimiter + retrieved.getMessage());
 			new ServerSendingThread(myManager.getServerSendingPort(), myManager.getUserList().get(tar_key2), msgNew).start();
 			break;
-		
-		case GlobalVariables.USER_INFO_REQUEST_ACTION:
+			
+		case GlobalVariables.REQUEST_ACTION:
 			index = new Integer(args[1]);
-			String tarName = args[2];
-			String myName = args[3];
-			Integer myPort = new Integer(args[4]);
+			String name = args[2];
+			int tar_key_in = myManager.getUserIndexByKey(new BigInteger(args[3], 16).toByteArray());
+			System.out.println("User Index Retrieved: " + tar_key_in);
+			if (myManager.getUserList().isEmpty() || tar_key_in == -1){
+				throw new Exception("The message is not sent from a validated user");
+			}
+			if(myManager.getUserList().get(tar_key_in).logHistoryRequest(req, index) == false){
+				System.out.println("A duplicate message number has found");
+				break;
+			}
+			String listOfUser = myManager.getUserList().get(tar_key_in).returnStringListOfUser();
+			int stat = myManager.getUserList().get(tar_key_in).returnAvaliability();
+			String recPort = String.valueOf(myManager.getUserList().get(tar_key_in).getRecevingPort());
+			String resp = new String(GlobalVariables.REQUEST_SUCCESSFUL + GlobalVariables.delimiter + name + GlobalVariables.delimiter +
+					recPort + GlobalVariables.delimiter + stat + GlobalVariables.delimiter + listOfUser);
+			new ServerSendingThread(myManager.getServerSendingPort(), myManager.getUserList().get(tar_key_in), resp).start();
+			break;
 
+			
+			
+
+			
+		case GlobalVariables.USER_INFO_REQUEST_ACTION:
+			String tarName = args[1]; //name of the sender
+			String myName = args[2]; //name requesting for
+			Integer myPort = new Integer(args[3]);
+			InetAddress addr = req.getSenderAddr();
 			User tarUser = myManager.findUserByName_Single(tarName);
 			if(tarUser == null){
-				String responce = new String(GlobalVariables.REFER_ACTION + GlobalVariables.delimiter + index.toString() + GlobalVariables.delimiter + myManager.getNextServerAddr().toString()
+				String responce = new String(GlobalVariables.REFER_ACTION  + GlobalVariables.delimiter + myManager.getNextServerAddr().toString()
 						+ GlobalVariables.delimiter + myManager.getNextServerPort());
 				new ServerSendingThread(myManager.getServerSendingPort(), req.getSenderAddr(), myPort, responce).start();
 				break;
@@ -185,19 +209,18 @@ public class RequestExecutor extends Thread{
 				break;
 			}
 			else if(tarUser.returnAvaliability() == -1){
-				String responce = new String(GlobalVariables.USER_INFO_REQUEST_SUCCESS + GlobalVariables.delimiter  
-						+ index.toString() + GlobalVariables.delimiter + tarName + GlobalVariables.delimiter + "off");
+				String responce = new String(GlobalVariables.USER_INFO_REQUEST_SUCCESS + GlobalVariables.delimiter + tarName + GlobalVariables.delimiter + "off");
 				new ServerSendingThread(myManager.getServerSendingPort(), req.getSenderAddr(), myPort, responce).start();
 				break;
 			}
 			else{
 				String responce = new String(GlobalVariables.USER_INFO_REQUEST_SUCCESS + GlobalVariables.delimiter  
-						+ index.toString() + GlobalVariables.delimiter + tarName + GlobalVariables.delimiter + tarUser.getRecevingPort()
-						+ GlobalVariables.delimiter + tarUser.getAddr().toString());
+						+ tarName + GlobalVariables.delimiter + tarUser.getRecevingPort()
+						+ GlobalVariables.delimiter + tarUser.getAddr().getHostAddress());
 				new ServerSendingThread(myManager.getServerSendingPort(), req.getSenderAddr(), myPort, responce).start();
 			}
 			
-			//Format: info_a%_1%_James%_Molly%_2234 (Molly asking information about James)
+			//Format: info_a%_James%_Molly%_2234 (Molly asking information about James)
 			break;
 
 				//TODO

@@ -11,6 +11,8 @@ import java.util.HashMap;
 import javax.crypto.ShortBufferException;
 import javax.xml.bind.DatatypeConverter;
 
+import org.tmatesoft.sqljet.core.SqlJetException;
+
 import requestsParser.Request;
 import logic.ServerSignatureGen;
 
@@ -110,6 +112,12 @@ public class User {
 		}
 		else{
 			history.put(index, req);
+			try {
+				ServerMessageDataBaseManager.insertItem(getAddr(), getName(), recevingPort, req.getMessage(), req.getSenderAddr(), req.getSenderPort(), index);
+			} catch (SqlJetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return true;
 		}
 	}
@@ -181,6 +189,10 @@ public class User {
 		}else{
 			isRegistered = true;
 		}
+	}
+	
+	public void resetFriendList(){
+		allowedListofUser.clear();
 	}
 	
 	public void makeFriend(String userSig){

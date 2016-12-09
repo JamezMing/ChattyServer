@@ -59,8 +59,8 @@ public class ServerMessageDataBaseManager {
 	            
 	            String createNameQuery = "CREATE UNIQUE INDEX " + MESSAGEQUERY_INDEX + " ON " + TABLE_NAME + "(" +  USER_ADDRESS_FIELD + ", " + USER_RECEIVEPORT_FIELD  + ", " + MESSAGE_INDEX_FIELD + ")"; 
 	            String createMessageQuery = "CREATE UNIQUE INDEX " + NAMEMESSAGEQUERY_INDEX + " ON " + TABLE_NAME + "(" +  USER_ADDRESS_FIELD + ", " + USER_NAME_FIELD  + ", " + MESSAGE_INDEX_FIELD + ")";
-	            String createUserQuery = "CREATE UNIQUE INDEX " + USER_INDEX + " ON " + TABLE_NAME + "(" +  USER_ADDRESS_FIELD + ", " + USER_NAME_FIELD   + ")";
-	            String createPortUserQuery = "CREATE UNIQUE INDEX " + PORTUSER_INDEX + " ON " + TABLE_NAME + "(" +  USER_ADDRESS_FIELD + ", " + USER_RECEIVEPORT_FIELD   + ")";
+	            String createUserQuery = "CREATE INDEX " + USER_INDEX + " ON " + TABLE_NAME + "(" +  USER_ADDRESS_FIELD + ", " + USER_NAME_FIELD   + ")";
+	            String createPortUserQuery = "CREATE INDEX " + PORTUSER_INDEX + " ON " + TABLE_NAME + "(" +  USER_ADDRESS_FIELD + ", " + USER_RECEIVEPORT_FIELD   + ")";
 				db.createTable(createTableQuery);
 				db.createIndex(createNameQuery);
 				db.createIndex(createMessageQuery);
